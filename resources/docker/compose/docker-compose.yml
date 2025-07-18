@@ -2,7 +2,7 @@
  services:
 
   lab-template:
-   image: thedatasociety/lab-template
+   image: jupter-hadoop-pets
    ports:
      - 8888:8888
    
