@@ -3,8 +3,8 @@
 ###############################################################
 # beakerx (kernels: java, clojure, groovy, scala, kotlin, sql) and dependencies
 beakerx
-py4j
-jupyterlab==1.2.6
+py4j # beakerx dependency
+jupyterlab~=3.6.0 # Compatible with beakerx and modern nodejs
 
 # sos - script of scripts (multiple kernels)
 # sos
@@ -36,4 +36,3 @@ numpy
 pandas
 matplotlib
 plotly
-

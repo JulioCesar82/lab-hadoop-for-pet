@@ -1,64 +1,61 @@
-FROM ubuntu:19.04
+# Comece com a imagem base oficial do Jupyter que inclui Python, JupyterLab e Conda
+FROM quay.io/jupyter/base-notebook:latest
 
-RUN apt-get -qq update && \
-    apt-get -qq install --yes --no-install-recommends locales curl git htop vim wget python3-pip less unzip \
+# --- Configuração do sistema como usuário root ---
+USER root
 
-# Set up locales properly
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
+# Esta camada instala todas as dependências do sistema.
+# É complexa porque precisamos de pacotes mais antigos (Java 8, libncurses5)
+# que não estão disponíveis nos repositórios padrão da imagem base (Ubuntu 22.04).
+RUN apt-get update && \
+    # Instala ferramentas essenciais para o processo de configuração
+    apt-get install -y --no-install-recommends wget ca-certificates curl unzip less && \
+    # \
+    # # Instala libncurses5 adicionando o repositório 'universe' do Ubuntu 20.04.
+    # # Isso é necessário para o mysql-minimal.
+    # echo "deb http://archive.ubuntu.com/ubuntu focal universe" >> /etc/apt/sources.list && \
+    # apt-get update && \
+    # apt-get install -y --no-install-recommends libncurses5 && \
+    \
+    # Instala OpenJDK 8 do Eclipse Temurin (para compatibilidade com Hadoop/Hive)
+    export JAVA_VERSION=jdk8u402-b06 && \
+    wget -q "https://github.com/adoptium/temurin8-binaries/releases/download/${JAVA_VERSION}/OpenJDK8U-jdk_x64_linux_hotspot_8u402b06.tar.gz" -O /tmp/openjdk.tar.gz && \
+    mkdir -p /usr/lib/jvm && \
+    tar -xf /tmp/openjdk.tar.gz -C /usr/lib/jvm && \
+    ln -s /usr/lib/jvm/jdk8u402-b06 /usr/lib/jvm/java-8-openjdk-amd64 && \
+    rm /tmp/openjdk.tar.gz && \
+    \
+    # Instala Node.js (necessário para construir extensões do JupyterLab como BeakerX)
+    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs
 
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
+# Copia os arquivos de dependência e instala os pacotes restantes do apt.txt
+# COPY binder/apt.txt /tmp/apt.txt
+# RUN apt-get update && \
+#     apt-get install -y --no-install-recommends $(grep -vE "^\s*#|^\s*$" /tmp/apt.txt | tr "\n" " ") && \
+    # Limpa os caches para reduzir o tamanho da imagem
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Use bash as default shell, rather than sh
-ENV SHELL /bin/bash
+# Copia o arquivo de requerimentos Python
+COPY binder/requirements.txt /tmp/requirements.txt
 
-# Set up user
-ARG NB_USER=thedatasociety
-ARG NB_UID=1000
-ARG GIT_PREFIX=https://github.com
-ARG GIT_USER=thedatasociety
-ARG GIT_REPO=lab-template
+# Instala os pacotes Python usando pip.
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-ENV USER ${NB_USER}
-ENV HOME /home/${NB_USER}
-RUN adduser --disabled-password \
-    --gecos "Default user" \
-    --uid ${NB_UID} \
-    ${NB_USER}
+# Copia o script de pós-construção e o torna executável
+COPY binder/postBuild /usr/local/bin/postBuild
+RUN chmod +x /usr/local/bin/postBuild
 
-# nodejs 10
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
-    apt-get install -y nodejs
+# Garante que o usuário non-root tenha permissão para modificar os diretórios do conda/jupyter
+RUN fix-permissions /opt/conda && \
+    fix-permissions /home/${NB_USER}
 
-WORKDIR /jupyter/data/
-
-# building the repo
-RUN git clone ${GIT_PREFIX}/${GIT_USER}/${GIT_REPO}
-WORKDIR /jupyter/data/${GITHUB_REPO}
-
-RUN apt-get install $(grep -vE "^\s*#" ./binder/apt.txt  | tr "\n" " ")
-RUN pip3 install -r ./binder/requirements.txt
-RUN chmod +x binder/postBuild
-
-RUN apt-get -qq purge && \
-    apt-get -qq clean && \
-    apt-get autoclean  -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
-
-# RUN mkdir conda-bld
-# RUN rm conda-bld -R
-
-# We always want containers to run as non-root
+# --- Configuração a nível de usuário ---
 USER ${NB_USER}
+WORKDIR /home/${NB_USER}
 
-# Make sure that postBuild scripts are marked executable before executing them
-RUN chmod +x binder/postBuild
-RUN ./binder/postBuild
+# Executa o script de pós-construção para baixar e configurar Hadoop, Hive, VSCode, etc.
+RUN sh /usr/local/bin/postBuild
 
-# Specify the default command to run
-CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]
-
-CMD jupyter-lab --ip=0.0.0.0 --port=8888 --no-browser --notebook-dir=/jupyter/data --allow-root --NotebookApp.token=''
+# Retorna ao diretório de trabalho padrão para notebooks
+WORKDIR /home/${NB_USER}/work
