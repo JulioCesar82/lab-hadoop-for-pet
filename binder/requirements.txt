@@ -36,3 +36,9 @@ numpy
 pandas
 matplotlib
 plotly
+
+
+redis
+sqlalchemy
+ipython-sql
+faker

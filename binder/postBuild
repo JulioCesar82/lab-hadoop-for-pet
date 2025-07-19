@@ -31,6 +31,41 @@ jupyter lab build --dev-build=False --minimize=False
 mkdir ~/resources/local
 cd    ~/resources/local
 
+
+
+
+
+
+###############################################################
+#             redis installation                              #
+###############################################################
+
+export REDIS_VERSION=6.0.5
+echo "export REDIS_VERSION=${REDIS_VERSION}" >> ~/.bashrc
+echo "export REDIS_VERSION=${REDIS_VERSION}" >> ~/.profile
+
+export REDIS_HOME=$(pwd)/redis-${REDIS_VERSION}
+echo "export REDIS_HOME=${REDIS_HOME}"       >> ~/.bashrc
+echo "export REDIS_HOME=${REDIS_HOME}"       >> ~/.profile
+
+       
+wget http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz -q && \
+tar xvzf redis-${REDIS_VERSION}.tar.gz                                && \
+rm       redis-${REDIS_VERSION}.tar.gz                                && \
+cd       redis-${REDIS_VERSION}
+make
+# make test
+
+mkdir bin
+cp src/redis-server bin/
+cp src/redis-cli bin/
+
+# adding bin/ to $path
+echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.bashrc
+echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.profile
+
+
+
 ###############################################################
 #             hadoop-related commands                         #
 ###############################################################
@@ -103,54 +138,6 @@ mv       apache-hive-${HIVE_VERSION}-bin        hive-${HIVE_VERSION}
 # adding bin and sbin to $path
 echo "export PATH=\$PATH:\$HIVE_HOME/bin"  >> ~/.bashrc
 echo "export PATH=\$PATH:\$HIVE_HOME/bin"  >> ~/.profile
-
-
-
-
-###############################################################
-#             mysql/mariadb-related commands                  #
-###############################################################
-
-# export MARIADB_VERSION=10.4.6
-# echo "export MARIADB_VERSION=${MARIADB_VERSION}" >> ~/.bashrc
-# echo "export MARIADB_VERSION=${MARIADB_VERSION}" >> ~/.profile
-
-# export MARIADB_HOME=$(pwd)/mariadb-${MARIADB_VERSION}
-# echo "export MARIADB_HOME=${MARIADB_HOME}"       >> ~/.bashrc
-# echo "export MARIADB_HOME=${MARIADB_HOME}"       >> ~/.profile
-
-# wget http://mirror.ufscar.br/mariadb//mariadb-${MARIADB_VERSION}/bintar-linux-glibc_214-x86_64/mariadb-${MARIADB_VERSION}-linux-glibc_214-x86_64.tar.gz -q  && \
-# tar -xvf mariadb-${MARIADB_VERSION}-linux-glibc_214-x86_64.tar.gz >> /dev/null  && \
-# rm mariadb-${MARIADB_VERSION}-linux-glibc_214-x86_64.tar.gz                     && \
-# mv mariadb-${MARIADB_VERSION}-linux-glibc_214-x86_64 mariadb-${MARIADB_VERSION} 
-
-# # adding bin/ to $path
-# echo "export PATH=\$PATH:\$MARIADB_HOME/bin"     >> ~/.bashrc
-# echo "export PATH=\$PATH:\$MARIADB_HOME/bin"     >> ~/.profile
-
-###############################################################
-#             mysql minimal installation commands             #
-###############################################################
-
-export MYSQL_VERSION=8.0.17
-echo "export MYSQL_VERSION=${MYSQL_VERSION}" >> ~/.bashrc
-echo "export MYSQL_VERSION=${MYSQL_VERSION}" >> ~/.profile
-
-export MYSQL_HOME=$(pwd)/mysql-${MYSQL_VERSION}
-echo "export MYSQL_HOME=${MYSQL_HOME}"       >> ~/.bashrc
-echo "export MYSQL_HOME=${MYSQL_HOME}"       >> ~/.profile
-
-       
-wget https://cdn.mysql.com/archives/mysql-8.0/mysql-${MYSQL_VERSION}-linux-x86_64-minimal.tar.xz -q  
-tar -xf mysql-${MYSQL_VERSION}-linux-x86_64-minimal.tar.xz >> /dev/null                              
-rm      mysql-${MYSQL_VERSION}-linux-x86_64-minimal.tar.xz                                           
-mv      mysql-${MYSQL_VERSION}-linux-x86_64-minimal        mysql-${MYSQL_VERSION} 
-
-# adding bin/ to $path
-echo "export PATH=\$PATH:\$MYSQL_HOME/bin"   >> ~/.bashrc
-echo "export PATH=\$PATH:\$MYSQL_HOME/bin"   >> ~/.profile
-
-
 
 
 ###############################################################
@@ -248,3 +235,4 @@ rm -rf code-server.tar.gz
 # adding bin/ to $path
 echo "export PATH=\$PATH:\$CODE_SERVER_HOME/bin"   >> ~/.bashrc
 echo "export PATH=\$PATH:\$CODE_SERVER_HOME/bin"   >> ~/.profile
+
