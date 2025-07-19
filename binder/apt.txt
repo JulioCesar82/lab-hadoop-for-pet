@@ -15,9 +15,9 @@ openjdk-8-jdk
 
 
 # redis dependencies
-gcc
-build-essential
-libc-bin
+#gcc
+#build-essential
+#libc-bin
 redis-server
 
 

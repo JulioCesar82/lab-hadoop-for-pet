@@ -16,7 +16,7 @@ Um laboratório para aprendizado de Hadoop, Redis e PostgreSQL para Pets.
 
 Usando recursos da Binder:
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JulioCesar82/lab-hadoop-for-pet/master?urlpath=labs)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JulioCesar82/lab-hadoop-for-pet/master?urlpath=lab/tree/labs)
 
 ou localmente:
 
