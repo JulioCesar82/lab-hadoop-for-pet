@@ -6,7 +6,7 @@ vim
 curl
 wget
 net-tools
-#openjdk-8-jdk
+openjdk-8-jdk
 telnet
 
 # mysql/mariadb packages
