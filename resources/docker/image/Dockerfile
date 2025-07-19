@@ -59,3 +59,6 @@ RUN sh /usr/local/bin/postBuild
 
 # Retorna ao diretório de trabalho padrão para notebooks
 WORKDIR /home/${NB_USER}/work
+
+# Copia os arquivos do JupterLab para o diretório de trabalho
+COPY labs .
