@@ -10,7 +10,7 @@
 
 A laboratory for learning Hadoop, Redis and PostgreSQL for Pets.
 
-## Execução do ambietne
+## Execução do ambiente
 
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JulioCesar82/lab-hadoop-for-pet/master?urlpath=lab)
