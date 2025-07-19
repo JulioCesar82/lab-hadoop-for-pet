@@ -7,8 +7,8 @@ vim
 curl
 wget
 net-tools
-
 telnet
+
 
 # hadoop dependencies
 openjdk-8-jdk
@@ -18,3 +18,8 @@ openjdk-8-jdk
 gcc
 build-essential
 libc-bin
+redis-server
+
+
+# postgresql dependencies
+postgresql
