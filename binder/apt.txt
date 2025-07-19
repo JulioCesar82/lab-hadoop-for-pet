@@ -1,3 +1,4 @@
+# system helpers
 openssh-client
 pdsh
 rsync
@@ -6,11 +7,14 @@ vim
 curl
 wget
 net-tools
-openjdk-8-jdk
+
 telnet
 
-# mysql/mariadb packages
-libaio1 
-libaio-dev
-numactl
-#libncurses5
+# hadoop dependencies
+openjdk-8-jdk
+
+
+# redis dependencies
+gcc
+build-essential
+libc-bin

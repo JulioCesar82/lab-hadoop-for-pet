@@ -8,8 +8,8 @@ chmod +x ~/binder/start.hbase
 chmod +x ~/binder/start.vscode 
 #chmod +x ~/binder/start.mariadb 
 
-# starting mysql in parallel
-~/binder/start.mysql   &
+# starting redis in parallel
+~/binder/start.redis &
 
 # starting vscode in parallel
 ~/binder/start.vscode  &
