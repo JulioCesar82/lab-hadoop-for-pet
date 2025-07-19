@@ -1,56 +1,14 @@
 <!-- ds header -->
 <div align="center">
  <img src="https://avatars3.githubusercontent.com/u/47368510?s=200&v=4" width="100px">
- <h3>The Data Science and Engineering Society </h3>
- <hr/>
- <a href="https://github.com/thedatasociety" target="_blank">
-   <img src="https://raw.githubusercontent.com/thedatasociety/lab-hadoop/master/resources/images/github-icon.png" width="30px" alt="github organization">
- </a>
- <a href="https://hub.docker.com/search?q=thedatasociety&type=image"  target="_blank" >
-   <img src="https://raw.githubusercontent.com/thedatasociety/lab-hadoop/master/resources/images/docker-icon.png" width="30px" alt="our docker hub organization">
- </a>
- <a href="https://thedatasociety.slack.com" target="_blank" >
-   <img src="https://raw.githubusercontent.com/thedatasociety/lab-hadoop/master/resources/images/slack-icon.png" width="30px" alt="our slack">
- </a>
- <a href="https://twitter.com/thedatasociety" target="_blank">
-   <img src="https://raw.githubusercontent.com/thedatasociety/lab-hadoop/master/resources/images/twitter-icon.png" width="30px" alt="our twitter">
- </a>
- <a href="https://quiltdata.com/package/thedatasociety/" target="_blank">
-   <img src="https://raw.githubusercontent.com/thedatasociety/lab-hadoop/master/resources/images/quilt-icon.png" width="30px" alt="quilt packages">
- </a> 
+ <h3>The Data Science and Engineering Society for Pets</h3>
+ 
 </div>
 <!-- /ds header -->
 
-# lab-hadoop for Pets
+# lab databases for Pets
 
-A laboratory for learning Hadoop for Pets.
-
-
-## Table of contents
-
-<!-- MarkdownTOC autolink=true -->
-
-- [Launching this laboratory on a binderhub instance](#launching-this-laboratory-on-a-binderhub-instance)
-  - [JupyterLab](#jupyterlab)
-  - [Jupyter](#jupyter)
-- [Launch this laboratory locally using Docker](#launch-this-laboratory-locally-using-docker)
-  - [Via our Docker image](#via-our-docker-image)
-  - [Via repo2docker](#via-repo2docker)
-  - [Accessing your Docker container](#accessing-your-docker-container)
-- [Contributing](#contributing)
-- [License](#license)
-
-<!-- /MarkdownTOC -->
-
-
-### Launching this laboratory on a [binderhub](https://github.com/jupyterhub/binderhub) instance
-
-[Binderhub](https://github.com/jupyterhub/binderhub) uses [repo2docker](https://github.com/jupyter/repo2docker) for launching and serving the computational environments. The list below contains the known binderhub instances.
-- [mybinder.org](mybinder.org)
-- [binder.gesis.org](binder.gesis.org)
-- [binder.pangeo.io](binder.pangeo.io)
-
-The list below provides the badges and the hyperlinks for launching one of the specific interfaces in one of the binderhub instances.
+A laboratory for learning Hadoop, Redis and PostgreSQL for Pets.
 
 #### JupyterLab 
   
@@ -75,79 +33,13 @@ The list below provides the badges and the hyperlinks for launching one of the s
 
 
 
-
-### Launch this laboratory locally using Docker
-
-We offer here two options for launching this lab locally: via our Docker image or via repo2docker.
-Before firing up your container, make sure your local user is in the `docker` group. Please refer to this Docker [documentation](https://docs.docker.com/install/linux/linux-postinstall/) for more details. **It is strongly advised to not to run the container as root**. 
-
-#### Via our Docker image
-
-You can run a containerized instance of this lab from [our own Docker image](https://hub.docker.com/r/thedatasociety/lab-hadoop/). Please refer to this [link](https://docs.docker.com/install/) for installing Docker. Then, try:
-
-
-https://github.com/thedatasociety/binderhub-hadoop/blob/master/binder/backup.Dockerfile
-
-```bash
-docker run -it -p 8888:8888 thedatasociety/lab-hadoop \
-           jupyter lab --ip 0.0.0.0 --NotebookApp.token='dstoken1234567' 
-```
-
-Alternatively, you can map you local home folder into the container:
-
 ```bash
 docker build -t jupter-hadoop-pets -f resources/docker/image/Dockerfile .
-docker run -d -p 8889:8888 -v "$(pwd):/home/jovyan/work" --name my-jupter-hadoop-pets  jupter-hadoop-pets start-notebook.py --NotebookApp.token='my-token'
+docker run -d -p 8889:8888 --name my-jupter-hadoop-pets  jupter-hadoop-pets start-notebook.py --NotebookApp.token='my-token'
 
 
 localhost:8889/lab?token=my-token
 ```
-
-or
-
-```
-docker run -it -p 8888:8888  \
-           -v $(echo ~):/jupyter/data/local-home \
-           thedatasociety/lab-hadoop \
-           jupyter lab --ip 0.0.0.0 --NotebookApp.token='dstoken1234567'
-```
-
-The *Dockerfile* used to build the image can be found [here](https://github.com/thedatasociety/lab-hadoop/tree/master/resources/docker/).
-
-**Please read the section** [Accessing your Docker container](#accessing-your-docker-container) for more details about running/accessing your container.
-
-
-#### Via [repo2docker](https://github.com/jupyter/repo2docker)
-
-You can also launch this laboratory locally using [Docker](https://docker.com) and [repo2docker](https://github.com/jupyter/repo2docker). Please refer to this [link](https://docs.docker.com/install/) for installing Docker and this [link](https://repo2docker.readthedocs.io/en/latest/install.html#) for installing repo2docker. Use the commands below to **build** a Docker image and start a container from it. 
-
-
-```bash
-repo2docker -p 8888:8888 \
-            -v $(echo ~):$(echo ~)/local-home \
-            https://github.com/thedatasociety/lab-hadoop \
-            jupyter lab --ip 0.0.0.0 --NotebookApp.token='dstoken1234567'
-
-```
-
-**Please read the section** [Accessing your Docker container](#accessing-your-docker-container) for details about running/accessing your container.
-
-#### Accessing your Docker container
-
-Both options above will launch a container on port `8888`. They will also create a Docker volume that maps the user's home into the container (in the container, look for the `local-home` folder).
-
-
-Please also be aware that the `--ip 0.0.0.0` directive will start a sever which **will accept connections from any ip**. For security purposes the `--NotebookApp.token='dstoken1234567'` directive forces the need of a token for accessing any interface. Use the `dstoken1234567` to login or feel free to set a stronger token.
-
-Each interface will be available at a specific path, as follows:
-
-* **Jupyter**: [http://0.0.0.0:8888/tree](http://0.0.0.0:8888/tree) 
-
-* **JupyterLab**: [http://0.0.0.0:8888/lab](http://0.0.0.0:8888/lab)  
-
-
-See the [repo2docker](https://github.com/jupyter/repo2docker) documentation for more details [regarding the use of multiple interfaces](https://mybinder.readthedocs.io/en/latest/howto/user_interface.html).
-
 
 
 ## Contributing
