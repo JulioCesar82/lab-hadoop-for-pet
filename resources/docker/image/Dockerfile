@@ -1,64 +1,101 @@
-# Comece com a imagem base oficial do Jupyter que inclui Python, JupyterLab e Conda
-FROM quay.io/jupyter/base-notebook:latest
+# --- Estágio 1: Builder ---
+# Este estágio baixa e extrai todas as ferramentas pesadas.
+FROM quay.io/jupyter/base-notebook:ubuntu-22.04 AS builder
+
+# Define as variáveis de ambiente para as versões das ferramentas
+ENV HADOOP_VERSION=2.9.2
+ENV HIVE_VERSION=2.3.9
+ENV SQOOP_VERSION=1.4.7
+ENV HBASE_VERSION=2.2.5
+ENV FLUME_VERSION=1.9.0
+ENV CODE_SERVER_VERSION=3.4.1
+
+# Muda para o usuário non-root para realizar os downloads
+USER root
+COPY resources/docker/image/scripts/ /usr/local/bin/
+RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
+    /usr/local/bin/install_system_deps.sh
+
+USER ${NB_USER}
+
+# Cria o diretório para os downloads e entra nele
+WORKDIR /home/${NB_USER}/resources
+
+# Executa todas as ferramentas de Big Data
+RUN /usr/local/bin/install_big_data_tools.sh
+
+
+# --- Estágio 2: Final ---
+# Este é o estágio final e enxuto da imagem.
+FROM quay.io/jupyter/base-notebook:ubuntu-22.04
 
 # --- Configuração do sistema como usuário root ---
 USER root
 
-# Esta camada instala todas as dependências do sistema.
-# É complexa porque precisamos de pacotes mais antigos (Java 8, libncurses5)
-# que não estão disponíveis nos repositórios padrão da imagem base (Ubuntu 22.04).
-RUN apt-get update && \
-    # Instala ferramentas essenciais para o processo de configuração
-    apt-get install -y --no-install-recommends wget ca-certificates curl unzip less && \
-    # \
-    # # Instala libncurses5 adicionando o repositório 'universe' do Ubuntu 20.04.
-    # # Isso é necessário para o mysql-minimal.
-    # echo "deb http://archive.ubuntu.com/ubuntu focal universe" >> /etc/apt/sources.list && \
-    # apt-get update && \
-    # apt-get install -y --no-install-recommends libncurses5 && \
-    \
-    # Instala OpenJDK 8 do Eclipse Temurin (para compatibilidade com Hadoop/Hive)
-    export JAVA_VERSION=jdk8u402-b06 && \
-    wget -q "https://github.com/adoptium/temurin8-binaries/releases/download/${JAVA_VERSION}/OpenJDK8U-jdk_x64_linux_hotspot_8u402b06.tar.gz" -O /tmp/openjdk.tar.gz && \
-    mkdir -p /usr/lib/jvm && \
-    tar -xf /tmp/openjdk.tar.gz -C /usr/lib/jvm && \
-    ln -s /usr/lib/jvm/jdk8u402-b06 /usr/lib/jvm/java-8-openjdk-amd64 && \
-    rm /tmp/openjdk.tar.gz && \
-    \
-    # Instala Node.js (necessário para construir extensões do JupyterLab como BeakerX)
-    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y --no-install-recommends nodejs
+# Define as variáveis de ambiente
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV HADOOP_VERSION=2.9.2
+ENV HIVE_VERSION=2.3.9
+ENV SQOOP_VERSION=1.4.7
+ENV HBASE_VERSION=2.2.5
+ENV FLUME_VERSION=1.9.0
+ENV CODE_SERVER_VERSION=3.4.1
+ENV HADOOP_HOME=/home/${NB_USER}/resources/hadoop-${HADOOP_VERSION}
+ENV HIVE_HOME=/home/${NB_USER}/resources/hive-${HIVE_VERSION}
+ENV SQOOP_HOME=/home/${NB_USER}/resources/sqoop-${SQOOP_VERSION}
+ENV HBASE_HOME=/home/${NB_USER}/resources/hbase-${HBASE_VERSION}
+ENV FLUME_HOME=/home/${NB_USER}/resources/flume-${FLUME_VERSION}
+ENV CODE_SERVER_HOME=/home/${NB_USER}/resources/code-server-${CODE_SERVER_VERSION}
+ENV PATH=$PATH:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${HIVE_HOME}/bin:${SQOOP_HOME}/bin:${HBASE_HOME}/bin:${FLUME_HOME}/bin:${CODE_SERVER_HOME}/bin
+ENV HADOOP_SSH_OPTS="-o StrictHostKeyChecking=no -p 8822"
+ENV PDSH_RCMD_TYPE=ssh
 
-# Copia os arquivos de dependência e instala os pacotes restantes do apt.txt
-# COPY binder/apt.txt /tmp/apt.txt
-# RUN apt-get update && \
-#     apt-get install -y --no-install-recommends $(grep -vE "^\s*#|^\s*$" /tmp/apt.txt | tr "\n" " ") && \
-    # Limpa os caches para reduzir o tamanho da imagem
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Copia o arquivo de requerimentos Python
-COPY binder/requirements.txt /tmp/requirements.txt
-
-# Instala os pacotes Python usando pip.
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
-
-# Copia o script de pós-construção e o torna executável
-COPY binder/postBuild /usr/local/bin/postBuild
-RUN chmod +x /usr/local/bin/postBuild
-
-# Garante que o usuário non-root tenha permissão para modificar os diretórios do conda/jupyter
-RUN fix-permissions /opt/conda && \
-    fix-permissions /home/${NB_USER}
+# Copia scripts de instalação e executa os scripts de instalação de dependências gerais, dependências Python e Jupyter
+COPY resources/docker/image/scripts/ /usr/local/bin/
+RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
+    /usr/local/bin/install_system_deps.sh && \
+    /usr/local/bin/install_dev_tools.sh && \
+    /usr/local/bin/install_python_deps.sh && \
+    /usr/local/bin/install_jupyter_ext.sh && \
+    /usr/local/bin/setup_user.sh
 
 # --- Configuração a nível de usuário ---
 USER ${NB_USER}
 WORKDIR /home/${NB_USER}
 
-# Executa o script de pós-construção para baixar e configurar Hadoop, Hive, VSCode, etc.
-RUN sh /usr/local/bin/postBuild
+# Copia as ferramentas de Big Data pré-extraídas do estágio builder
+COPY --from=builder /home/${NB_USER}/resources /home/${NB_USER}/resources
 
-# Retorna ao diretório de trabalho padrão para notebooks
-WORKDIR /home/${NB_USER}/work
+RUN echo "export JAVA_HOME=${JAVA_HOME}" >> ~/.bashrc && \
+    echo "export HADOOP_HOME=${HADOOP_HOME}" >> ~/.bashrc && \
+    echo "export HIVE_HOME=${HIVE_HOME}" >> ~/.bashrc && \
+    echo "export SQOOP_HOME=${SQOOP_HOME}" >> ~/.bashrc && \
+    echo "export HBASE_HOME=${HBASE_HOME}" >> ~/.bashrc && \
+    echo "export FLUME_HOME=${FLUME_HOME}" >> ~/.bashrc && \
+    echo "export CODE_SERVER_HOME=${CODE_SERVER_HOME}" >> ~/.bashrc && \
+    echo "export PATH=${PATH}" >> ~/.bashrc && \
+    echo "export HADOOP_SSH_OPTS='${HADOOP_SSH_OPTS}'" >> ~/.bashrc && \
+    echo "export PDSH_RCMD_TYPE=${PDSH_RCMD_TYPE}" >> ~/.bashrc
 
-# Copia os arquivos do JupterLab para o diretório de trabalho
-COPY labs .
+# Copia os arquivos de configuração do Hadoop com a propriedade correta
+COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
+
+# --- Configuração final como root ---
+USER root
+
+# Garante que o usuário non-root tenha permissão para modificar os diretórios
+RUN fix-permissions /opt/conda && \
+    fix-permissions /home/${NB_USER}
+
+# --- Volta para o usuário non-root ---
+USER ${NB_USER}
+
+# Remove pacotes não utilizados e bloqueia downloads novos
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Define o script de entrada
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Comando padrão para iniciar o JupyterLab
+CMD ["start-notebook.sh"]

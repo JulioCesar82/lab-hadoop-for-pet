@@ -4,22 +4,6 @@ pdsh
 rsync
 htop
 vim
-curl
-wget
 net-tools
 telnet
-
-
-# hadoop dependencies
-openjdk-8-jdk
-
-
-# redis dependencies
-#gcc
-#build-essential
-#libc-bin
-redis-server
-
-
-# postgresql dependencies
-postgresql
+less
