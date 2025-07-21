@@ -18,7 +18,9 @@ Infelizmente o Container esta com 8.48 GB (estamos tentando diminuir)
 
 Usando recursos da Binder:
 
+<!-- 
 [![Binder a partir da imagem Docker pronta](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fhub.docker.com%2Fr%2Fjulio471%2Fjupter-hadoop-pets/master?urlpath=lab/tree/labss)
+-->
 
 [![Binder a partir do Dockerfile](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JulioCesar82/lab-hadoop-for-pet/master?urlpath=lab/tree/labs)
 
