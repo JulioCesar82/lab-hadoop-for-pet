@@ -85,14 +85,12 @@ USER root
 
 # Garante que o usuário non-root tenha permissão para modificar os diretórios
 RUN fix-permissions /opt/conda && \
-    fix-permissions /home/${NB_USER}
+    fix-permissions /home/${NB_USER} && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # --- Volta para o usuário non-root ---
 USER ${NB_USER}
-
-# Remove pacotes não utilizados e bloqueia downloads novos
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # Define o script de entrada
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
