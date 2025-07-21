@@ -2,13 +2,20 @@
 # Este estágio baixa e extrai todas as ferramentas pesadas.
 FROM quay.io/jupyter/base-notebook:ubuntu-22.04 AS builder
 
+# Define as variáveis de ambiente para as versões das ferramentas
+ENV HADOOP_VERSION=2.9.2
+ENV HIVE_VERSION=2.3.9
+ENV SQOOP_VERSION=1.4.7
+ENV HBASE_VERSION=2.2.5
+ENV FLUME_VERSION=1.9.0
+ENV CODE_SERVER_VERSION=3.4.1
+
 # Muda para o usuário non-root para realizar os downloads
 USER root
 
 # Copia scripts de instalação e executa os scripts de instalação de dependências gerais
 COPY resources/docker/image/scripts/ /usr/local/bin/
 RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
-    /usr/local/bin/set_env_vars.sh && \
     /usr/local/bin/install_system_deps.sh
 
 USER ${NB_USER}
@@ -26,6 +33,24 @@ FROM quay.io/jupyter/base-notebook:ubuntu-22.04
 
 # --- Configuração do sistema como usuário root ---
 USER root
+
+# Define as variáveis de ambiente
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV HADOOP_VERSION=2.9.2
+ENV HIVE_VERSION=2.3.9
+ENV SQOOP_VERSION=1.4.7
+ENV HBASE_VERSION=2.2.5
+ENV FLUME_VERSION=1.9.0
+ENV CODE_SERVER_VERSION=3.4.1
+ENV HADOOP_HOME=/home/${NB_USER}/resources/hadoop-${HADOOP_VERSION}
+ENV HIVE_HOME=/home/${NB_USER}/resources/hive-${HIVE_VERSION}
+ENV SQOOP_HOME=/home/${NB_USER}/resources/sqoop-${SQOOP_VERSION}
+ENV HBASE_HOME=/home/${NB_USER}/resources/hbase-${HBASE_VERSION}
+ENV FLUME_HOME=/home/${NB_USER}/resources/flume-${FLUME_VERSION}
+ENV CODE_SERVER_HOME=/home/${NB_USER}/resources/code-server-${CODE_SERVER_VERSION}
+ENV PATH=$PATH:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${HIVE_HOME}/bin:${SQOOP_HOME}/bin:${HBASE_HOME}/bin:${FLUME_HOME}/bin:${CODE_SERVER_HOME}/bin
+ENV HADOOP_SSH_OPTS="-o StrictHostKeyChecking=no -p 8822"
+ENV PDSH_RCMD_TYPE=ssh
 
 # Copia scripts de instalação e executa os scripts de instalação de dependências gerais, dependências Python e Jupyter
 COPY resources/docker/image/scripts/ /usr/local/bin/
