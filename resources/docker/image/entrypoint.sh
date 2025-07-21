@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Source the profile to get all the environment variables
-source ~/.profile
+# Source the environment variables
+if [ -f /usr/local/bin/set_env_vars.sh ]; then
+    source /usr/local/bin/set_env_vars.sh
+fi
 
 # Start services in the background
 nohup redis-server &> ~/logs/redis.log &
@@ -21,7 +23,7 @@ start-yarn.sh
 ${HBASE_HOME}/bin/start-hbase.sh
 
 # Start VSCode
-nohup ~/resources/local/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
+nohup ~/resources/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
 
 # Execute the command passed to the container
 exec "$@"

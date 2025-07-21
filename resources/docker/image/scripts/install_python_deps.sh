@@ -18,5 +18,6 @@ pip install --no-cache-dir \
     plotly \
     sqlalchemy \
     ipython-sql \
+    psycopg2-binary \
     faker \
     redis
