@@ -1,8 +1,0 @@
-#!/bin/bash
-
-
-nohup  redis-server &> ~/logs/redis-$REDIS_VERSION.log &
-
-sleep 10
-
-redis-cli ping
