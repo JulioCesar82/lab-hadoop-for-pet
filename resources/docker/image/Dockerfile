@@ -46,7 +46,7 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
 COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
 
 # --- Configuração final como root ---
-USER root
+# USER root
 
 # Garante que o usuário non-root tenha permissão para modificar os diretórios
 # RUN fix-permissions /opt/conda && \
