@@ -24,7 +24,10 @@ ENV HADOOP_SSH_OPTS="-o StrictHostKeyChecking=no -p 8822"
 ENV PDSH_RCMD_TYPE=ssh
 
 # Copia scripts de instalação e executa os scripts de instalação de dependências gerais, dependências Python e Jupyter
+COPY resources/docker/image/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY resources/docker/image/scripts/ /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /home/${NB_USER}/resources
 
