@@ -6,11 +6,15 @@ chmod +x ~/binder/start.hive
 chmod +x ~/binder/start.hbase 
 
 chmod +x ~/binder/start.redis 
+chmod +x ~/binder/start.postgresql
 
 chmod +x ~/binder/start.vscode 
 
 # starting redis in parallel
 ~/binder/start.redis &
+
+# starting postgresql in parallel
+~/binder/start.postgresql &
 
 # starting vscode in parallel
 ~/binder/start.vscode  &
