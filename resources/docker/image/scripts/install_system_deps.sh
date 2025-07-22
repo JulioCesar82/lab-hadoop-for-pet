@@ -9,11 +9,11 @@ echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99-no-check-val
 apt-get update || true
 apt-get install -f -y || true
 apt-get upgrade -y --fix-missing || true
+# apt-get install -y --no-install-recommends mvn 
 apt-get install -y --no-install-recommends \
     curl \
     unzip \
     wget \
-    mvn \
     postgresql \
     redis-server
 
