@@ -18,7 +18,7 @@ libaio1
 libaio-dev
 numactl
 libncurses5
-mvn
+maven
 postgresql
 redis-server
 
