@@ -7,3 +7,22 @@ vim
 net-tools
 telnet
 less
+
+
+# Não era para estar aqui
+curl
+wget
+unzip
+openjdk-8-jdk
+libaio1 
+libaio-dev
+numactl
+libncurses5
+mvn
+postgresql
+redis-server
+
+# redis dependencies
+gcc
+build-essential
+libc-bin
