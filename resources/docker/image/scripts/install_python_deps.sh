@@ -15,7 +15,6 @@ pip install --no-cache-dir \
     numpy \
     pandas \
     matplotlib \
-    mvn \
     plotly \
     sqlalchemy \
     ipython-sql \

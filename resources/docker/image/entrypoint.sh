@@ -12,7 +12,8 @@ nohup redis-server &> ~/logs/redis.log &
 # Start and configure PostgreSQL
 sudo service postgresql start
 sleep 5
-sudo -u postgres psql -c "CREATE USER ${NB_USER};"
+sudo -u postgres psql -c "CREATE USER postgre"
+sudo -u postgres psql -c "CREATE DATABASE postgre"
 
 # Format and start Hadoop
 hdfs namenode -format -force -nonInteractive >> /dev/null
