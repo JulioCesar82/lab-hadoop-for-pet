@@ -13,6 +13,7 @@ apt-get install -y --no-install-recommends \
     curl \
     unzip \
     wget \
+    mvn \
     postgresql \
     redis-server
 
