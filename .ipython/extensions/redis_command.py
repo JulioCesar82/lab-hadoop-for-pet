@@ -1,3 +1,5 @@
+# Não era para existir
+
 from IPython.core.magic import (register_line_magic,
                                 register_cell_magic)
 import redis as redis_db

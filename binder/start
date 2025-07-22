@@ -1,0 +1,34 @@
+#!/bin/bash
+# Não era para existir
+
+chmod +x ~/binder/start.hadoop 
+chmod +x ~/binder/start.hive 
+chmod +x ~/binder/start.hbase 
+
+chmod +x ~/binder/start.redis 
+
+chmod +x ~/binder/start.vscode 
+
+# starting redis in parallel
+~/binder/start.redis &
+
+# starting vscode in parallel
+~/binder/start.vscode  &
+
+# starting big data environment in parallel
+~/binder/start.hadoop  &&\
+sleep 3                &&\
+~/binder/start.hive    &&\
+~/binder/start.hbase   &&\
+touch ready            &
+
+
+
+# adding my own extensions
+mkdir -p ~/.ipython/extensions/
+cp       ~/.ipython/extensions/* ~/.ipython/extensions/
+
+
+# DO NOT REMOVE(!) 
+# Here is why: https://mybinder.readthedocs.io/en/latest/config_files.html#start-run-code-before-the-user-sessions-starts
+exec "$@"

@@ -1,0 +1,23 @@
+#!/bin/bash
+# Não era para existir
+
+# loading envvars
+source ~/.profile
+
+export PGDATA=~/resources/local/postgresql/data
+echo "export PGDATA=${PGDATA}" >> ~/.bashrc
+echo "export PGDATA=${PGDATA}" >> ~/.profile
+
+# Initialize PostgreSQL database if it doesn't exist
+if [ ! -d "$PGDATA" ]; then
+    mkdir -p "$PGDATA"
+    initdb -D "$PGDATA"
+fi
+
+# Start PostgreSQL server
+nohup pg_ctl -D "$PGDATA" -l ~/logs/postgresql.log start &
+
+sleep 10
+
+# Check PostgreSQL status
+pg_isready -h localhost -p 5432

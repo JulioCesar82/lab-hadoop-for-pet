@@ -1,4 +1,5 @@
 #!/bin/bash
+# Não era para existir
 
 mkdir -p /home/$USER/.config/Code/User
 cp ~/.vscode/keybindings.json /home/$USER/.config/Code/User/
