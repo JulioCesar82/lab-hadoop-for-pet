@@ -38,7 +38,7 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
     /usr/local/bin/setup_user.sh
     
 # --- Configuração a nível de usuário ---
-USER ${NB_USER}
+# USER ${NB_USER}
 
 # As variáveis de ambiente agora são definidas em /etc/profile.d/set_env_vars.sh
 
@@ -55,7 +55,7 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Volta para o usuário non-root ---
-USER ${NB_USER}
+# USER ${NB_USER}
 
 # Define o script de entrada
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
