@@ -21,3 +21,23 @@ sleep 10
 
 # Check PostgreSQL status
 pg_isready -h localhost -p 5432
+
+# Waiting for PostgreSQL startup
+while ! pg_isready -h localhost -p 5432 -q; do
+    echo "PostgreSQL is down...";
+    sleep 5
+done
+
+echo "PostgreSQL is up!";
+
+# Creating local users and granting all privileges
+# The default superuser for PostgreSQL is 'postgres'.
+# We will connect as 'postgres' to create other users.
+
+# Create user for ${USER} with superuser privileges
+psql -h localhost -U postgres -c "CREATE USER \"${USER}\" WITH SUPERUSER;"
+
+# Create user for root with superuser privileges
+psql -h localhost -U postgres -c "CREATE USER root WITH SUPERUSER;"
+
+echo "PostgreSQL is ready!"
