@@ -14,7 +14,7 @@ Um laboratório para aprendizado de Hadoop, Redis e PostgreSQL para Pets.
 
 ## Execução do ambiente
 
-Infelizmente o Container esta com 8.48 GB (estamos tentando diminuir)
+Infelizmente o Container esta com 4.14 GB
 
 Usando recursos da Binder:
 
