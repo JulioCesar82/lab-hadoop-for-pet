@@ -49,7 +49,7 @@ cp src/redis-cli bin/
 ###############################################################
 
 # adding bin/ to $path
-export POSTGRESQL_BIN_DIR=$(find /usr/lib/postgresql/ -type d -name "bin" | head -n 1)
+export POSTGRESQL_BIN_DIR=$(find /usr/lib/postgresql/ -type d -name "bin")
 echo "export POSTGRESQL_BIN_DIR=${POSTGRESQL_BIN_DIR}"       >> ~/.bashrc
 echo "export POSTGRESQL_BIN_DIR=${POSTGRESQL_BIN_DIR}"       >> ~/.profile
 
