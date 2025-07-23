@@ -48,7 +48,14 @@ echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.bashrc
 echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.profile
 
 
+###############################################################
+#             postgresql commands                             #
+###############################################################
 
+# adding bin/ to $path
+export POSTGRESQL_BIN_DIR=$(find /usr/lib/postgresql/ -type d -name "bin" | head -n 1)
+echo "export PATH=\$PATH:\$POSTGRESQL_BIN_DIR"   >> ~/.bashrc
+echo "export PATH=\$PATH:\$POSTGRESQL_BIN_DIR"   >> ~/.profile
 
 
 
