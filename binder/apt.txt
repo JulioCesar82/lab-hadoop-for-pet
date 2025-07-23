@@ -26,3 +26,6 @@ redis-server
 gcc
 build-essential
 libc-bin
+
+# postgresql dependencies
+postgresql-contrib
