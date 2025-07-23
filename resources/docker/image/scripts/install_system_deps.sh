@@ -11,6 +11,7 @@ apt-get install -f -y || true
 apt-get upgrade -y --fix-missing || true
 # apt-get install -y --no-install-recommends mvn 
 apt-get install -y --no-install-recommends \
+    ssh \
     curl \
     unzip \
     wget \

@@ -39,9 +39,12 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
     /usr/local/bin/install_jupyter_ext.sh && \
     /usr/local/bin/install_big_data_tools.sh && \
     /usr/local/bin/setup_user.sh
-    
+
+# Ensure all resources are owned by the non-root user
+RUN chown -R ${NB_USER}:${NB_GID} /home/${NB_USER}/resources
+
 # --- Configuração a nível de usuário ---
-# USER ${NB_USER}
+USER ${NB_USER}
 
 # As variáveis de ambiente agora são definidas em /etc/profile.d/set_env_vars.sh
 
@@ -49,16 +52,16 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
 COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
 
 # --- Configuração final como root ---
-# USER root
+USER root
 
 # Garante que o usuário non-root tenha permissão para modificar os diretórios
-# RUN fix-permissions /opt/conda && \
-#     fix-permissions /home/${NB_USER} && \
-RUN apt-get clean && \
+RUN fix-permissions /opt/conda && \
+    fix-permissions /home/${NB_USER} && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Volta para o usuário non-root ---
-# USER ${NB_USER}
+USER ${NB_USER}
 
 # Define o script de entrada
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

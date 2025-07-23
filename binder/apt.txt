@@ -1,5 +1,4 @@
 # system helpers
-openssh-client
 pdsh
 rsync
 htop
@@ -29,3 +28,6 @@ libc-bin
 
 # postgresql dependencies
 postgresql-contrib
+
+# hadoop dependencies
+ssh
