@@ -14,8 +14,6 @@ Um laboratório para aprendizado de Hadoop, Redis e PostgreSQL para Pets.
 
 ## Execução do ambiente
 
-Infelizmente o Container esta com 4.14 GB
-
 Usando recursos da Binder:
 
 <!-- 
@@ -24,7 +22,15 @@ Usando recursos da Binder:
 
 [![Binder a partir do Dockerfile](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JulioCesar82/lab-hadoop-for-pet/master?urlpath=lab/tree/labs)
 
-ou localmente:
+
+ou via DockerHub:
+
+```bash
+docker run -d -p 8889:8888 --name my-jupter-hadoop-pets julio471/jupter-hadoop-pets:2.0 start-notebook.py --NotebookApp.token='my-token'
+```
+
+
+ou Build local (menos recomendado porque demora muito, gerando um Container por volta de 4 a 5 GB):
 
 ```bash
 docker build -t jupter-hadoop-pets -f resources/docker/image/Dockerfile .

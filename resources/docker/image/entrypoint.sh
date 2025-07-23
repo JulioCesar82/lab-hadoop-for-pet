@@ -7,7 +7,7 @@ fi
 
 # Start services in the background
 nohup redis-server &> ~/logs/redis.log &
-# /usr/sbin/sshd -f ~/resources/configs/ssh/sshd_config &
+/usr/sbin/sshd -f ~/resources/configs/ssh/sshd_config &
 
 # Start and configure PostgreSQL
 sudo service postgresql start
