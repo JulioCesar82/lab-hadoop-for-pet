@@ -170,6 +170,20 @@ mv      sqoop-${SQOOP_VERSION}.bin__hadoop-2.6.0        sqoop-${SQOOP_VERSION}
 echo "export PATH=\$PATH:\$SQOOP_HOME/bin"   >> ~/.bashrc
 echo "export PATH=\$PATH:\$SQOOP_HOME/bin"   >> ~/.profile
 
+# Download PostgreSQL JDBC driver
+wget -q https://jdbc.postgresql.org/download/postgresql-42.2.5.jar -O postgresql-driver.jar
+chmod 644 postgresql-driver.jar
+
+# Copy driver to Sqoop and Hive lib directories
+cp postgresql-driver.jar ${SQOOP_HOME}/lib/
+cp postgresql-driver.jar ${HIVE_HOME}/lib/
+
+# Add driver to Hadoop's classpath
+export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${HADOOP_HOME}/share/hadoop/common/lib/postgresql-driver.jar
+echo "export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${HADOOP_HOME}/share/hadoop/common/lib/postgresql-driver.jar" >> ~/.bashrc
+echo "export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${HADOOP_HOME}/share/hadoop/common/lib/postgresql-driver.jar" >> ~/.profile
+mv postgresql-driver.jar ${HADOOP_HOME}/share/hadoop/common/lib/
+
 
 
 

@@ -26,6 +26,7 @@ jupyter-vscode-proxy
 
 mrjob
 # google-api-python-client
+psycopg2-binary
 
 
 ###############################################################
