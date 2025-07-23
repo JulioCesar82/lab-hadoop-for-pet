@@ -43,10 +43,6 @@ mkdir bin
 cp src/redis-server bin/
 cp src/redis-cli bin/
 
-# adding bin/ to $path
-echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.bashrc
-echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.profile
-
 
 ###############################################################
 #             postgresql commands                             #
@@ -54,6 +50,9 @@ echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.profile
 
 # adding bin/ to $path
 export POSTGRESQL_BIN_DIR=$(find /usr/lib/postgresql/ -type d -name "bin" | head -n 1)
+echo "export POSTGRESQL_BIN_DIR=${POSTGRESQL_BIN_DIR}"       >> ~/.bashrc
+echo "export POSTGRESQL_BIN_DIR=${POSTGRESQL_BIN_DIR}"       >> ~/.profile
+
 echo "export PATH=\$PATH:\$POSTGRESQL_BIN_DIR"   >> ~/.bashrc
 echo "export PATH=\$PATH:\$POSTGRESQL_BIN_DIR"   >> ~/.profile
 
@@ -91,9 +90,9 @@ tar -xvf hadoop-${HADOOP_VERSION}.tar.gz >> /dev/null                           
 rm       hadoop-${HADOOP_VERSION}.tar.gz              
 
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 " >> ~/.bashrc
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 " >> ~/.profile
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 " >> ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
+echo "export JAVA_HOME=${JAVA_HOME} " >> ~/.bashrc
+echo "export JAVA_HOME=${JAVA_HOME} " >> ~/.profile
+echo "export JAVA_HOME=${JAVA_HOME} " >> ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 
 # adding bin and sbin to $path
 echo "export PATH=\$PATH:\$HADOOP_HOME/bin"  >> ~/.bashrc
