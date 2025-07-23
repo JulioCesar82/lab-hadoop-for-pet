@@ -1,6 +1,8 @@
 #!/bin/bash
 # Não era para existir
 
+kdir logs
+
 chmod +x ~/binder/start.hadoop 
 chmod +x ~/binder/start.hive 
 chmod +x ~/binder/start.hbase 
@@ -26,6 +28,11 @@ sleep 3                &&\
 ~/binder/start.hbase   &&\
 touch ready            &
 
+cd ~
+echo " " >> .gitignore
+echo "resources/local/" >> .gitignore
+echo ".local/" >> .gitignore
+echo "local-home/" >> .gitignore
 
 
 # adding my own extensions

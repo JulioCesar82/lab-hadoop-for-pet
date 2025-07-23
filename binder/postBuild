@@ -5,6 +5,53 @@
 #          jupyter/jupyterlab extensions/kernels              #
 ###############################################################
 
+# Building everything up
+echo "Building everything up (jupyter lab build)"
+jupyter lab build 
+
+
+###############################################################
+#             moving to a local installation folder           #
+###############################################################
+
+mkdir ~/resources/local
+cd    ~/resources/local
+
+
+
+###############################################################
+#             redis installation                              #
+###############################################################
+
+export REDIS_VERSION=6.0.5
+echo "export REDIS_VERSION=${REDIS_VERSION}" >> ~/.bashrc
+echo "export REDIS_VERSION=${REDIS_VERSION}" >> ~/.profile
+
+export REDIS_HOME=$(pwd)/redis-${REDIS_VERSION}
+echo "export REDIS_HOME=${REDIS_HOME}"       >> ~/.bashrc
+echo "export REDIS_HOME=${REDIS_HOME}"       >> ~/.profile
+
+       
+wget http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz -q && \
+tar xvzf redis-${REDIS_VERSION}.tar.gz                                && \
+rm       redis-${REDIS_VERSION}.tar.gz                                && \
+cd       redis-${REDIS_VERSION}
+make
+# make test
+
+mkdir bin
+cp src/redis-server bin/
+cp src/redis-cli bin/
+
+# adding bin/ to $path
+echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.bashrc
+echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.profile
+
+
+
+
+
+
 # sos installation
 # python -m sos_notebook.install
 # jupyter labextension install jupyterlab-sos --no-build 
@@ -19,18 +66,6 @@ beakerx install
 echo "Table of contents Jupyter Lab extension install"
 jupyter labextension install @jupyterlab/toc --no-build 
 
-
-# Building everything up
-echo "Building everything up (jupyter lab build)"
-jupyter lab build 
-
-
-###############################################################
-#             moving to a local installation folder           #
-###############################################################
-
-mkdir ~/resources/local
-cd    ~/resources/local
 
 ###############################################################
 #             hadoop-related commands                         #
@@ -177,35 +212,6 @@ mv      apache-flume-${FLUME_VERSION}-bin        flume-${FLUME_VERSION}
 echo "export PATH=\$PATH:\$FLUME_HOME/bin"   >> ~/.bashrc
 echo "export PATH=\$PATH:\$FLUME_HOME/bin"   >> ~/.profile
 
-
-
-###############################################################
-#             redis installation                              #
-###############################################################
-
-export REDIS_VERSION=6.0.5
-echo "export REDIS_VERSION=${REDIS_VERSION}" >> ~/.bashrc
-echo "export REDIS_VERSION=${REDIS_VERSION}" >> ~/.profile
-
-export REDIS_HOME=$(pwd)/redis-${REDIS_VERSION}
-echo "export REDIS_HOME=${REDIS_HOME}"       >> ~/.bashrc
-echo "export REDIS_HOME=${REDIS_HOME}"       >> ~/.profile
-
-       
-wget http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz -q && \
-tar xvzf redis-${REDIS_VERSION}.tar.gz                                && \
-rm       redis-${REDIS_VERSION}.tar.gz                                && \
-cd       redis-${REDIS_VERSION}
-make
-# make test
-
-mkdir bin
-cp src/redis-server bin/
-cp src/redis-cli bin/
-
-# adding bin/ to $path
-echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.bashrc
-echo "export PATH=\$PATH:\$REDIS_HOME/bin"   >> ~/.profile
 
 
 

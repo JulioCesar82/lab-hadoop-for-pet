@@ -5,7 +5,7 @@
 # beakerx (kernels: java, clojure, groovy, scala, kotlin, sql) and dependencies
 beakerx
 py4j
-jupyterlab==1.2.6
+jupyterlab
 
 # sos - script of scripts (multiple kernels)
 # sos
@@ -47,6 +47,7 @@ plotly
 
 # jupyter/jupyterlab extensions
 jupyterlab-rise
+ipywidgets
 jupyter_contrib_nbextensions
 
 # lab-related packages
