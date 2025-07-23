@@ -21,23 +21,12 @@ chmod +x ~/binder/start.vscode
 # starting vscode in parallel
 ~/binder/start.vscode  &
 
-# Starting big data environment and waiting for it to be ready
-echo "Starting Big Data services in the background..."
-(
-    ~/binder/start.hadoop  && \
-    sleep 3                && \
-    ~/binder/start.hive    && \
-    ~/binder/start.hbase   && \
-    touch ready
-) &
-
-# Wait for the 'ready' file to be created, which signals that services are up
-echo "Waiting for Big Data environment to initialize..."
-while [ ! -f ready ]; do
-    echo "Still waiting for services to start..."
-    sleep 5
-done
-echo "Big Data environment is ready!"
+# starting big data environment in parallel
+~/binder/start.hadoop  &&\
+sleep 3                &&\
+~/binder/start.hive    &&\
+~/binder/start.hbase   &&\
+touch ready            &
 
 cd ~
 echo " " >> .gitignore
