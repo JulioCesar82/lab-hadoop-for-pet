@@ -28,7 +28,28 @@ cp ~/resources/configs/hadoop/${HADOOP_VERSION}/yarn-site.xml   ${HADOOP_HOME}/e
 
 start-yarn.sh                                                                               
 
-hdfs dfs -mkdir /user/                                                                      
-hdfs dfs -mkdir /user/$USER                                                                 
+hdfs dfs -mkdir -p /user/$USER
 
-# echo "${USER} $(pwd) ${HADOOP_HOME} ${HADOOP_VERSION}" > startresult.txt
+# Wait for NameNode process to start
+echo "Waiting for NameNode process to start..."
+while ! jps | grep -q NameNode; do
+    echo "NameNode process not found, waiting..."
+    sleep 2
+done
+echo "NameNode process started."
+
+# Wait for NameNode port 9000 to open
+echo "Waiting for NameNode port 9000 to open..."
+while ! netstat -tuln | grep -q ':9000'; do
+    echo "Port 9000 is not open yet, waiting..."
+    sleep 2
+done
+echo "NameNode port 9000 is open."
+
+# Wait for HDFS to exit safe mode
+echo "Waiting for HDFS to exit safe mode..."
+until hdfs dfsadmin -safemode get | grep -q "Safe mode is OFF"; do
+    echo "HDFS still in safe mode, waiting..."
+    sleep 5
+done
+echo "HDFS is ready!"
