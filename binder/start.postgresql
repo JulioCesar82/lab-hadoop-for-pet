@@ -40,4 +40,7 @@ psql -h localhost -U postgres -c "CREATE USER \"${USER}\" WITH SUPERUSER;"
 # Create user for root with superuser privileges
 psql -h localhost -U postgres -c "CREATE USER root WITH SUPERUSER;"
 
+# Create database
+psql -h localhost -U postgres -c "CREATE DATABASE postgres;"
+
 echo "PostgreSQL is ready!"
