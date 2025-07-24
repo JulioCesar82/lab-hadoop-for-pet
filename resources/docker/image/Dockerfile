@@ -63,6 +63,12 @@ RUN fix-permissions /opt/conda && \
 # --- Volta para o usuário non-root ---
 USER ${NB_USER}
 
+# Retorna ao diretório de trabalho padrão para notebooks
+WORKDIR /home/${NB_USER}/work
+
+# Copia os arquivos do JupterLab para o diretório de trabalho
+COPY labs .
+
 # Define o script de entrada
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
