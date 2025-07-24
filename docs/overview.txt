@@ -28,7 +28,7 @@ This project provides a fully containerized, portable lab environment for big da
 
 The environment is built using a **multi-stage Dockerfile** to create an optimized and lean final image. This approach separates the build-time dependencies from the runtime environment, significantly reducing the image size.
 
-**1. `Dockerfile` (`resources/docker/image/Dockerfile`)**
+**1. `Dockerfile` (`Dockerfile`)**
 
 This is the central component that defines the build process. It is structured in two main stages:
 
@@ -44,7 +44,7 @@ This is the central component that defines the build process. It is structured i
     *   It sets up the non-root `jovyan` user, including SSH keys and directory permissions.
     *   It defines the `entrypoint.sh` script as the container's entrypoint.
 
-**2. Modular Installation Scripts (`resources/docker/image/scripts/`)**
+**2. Modular Installation Scripts (`resources/scripts/`)**
 
 To keep the `Dockerfile` clean and maintainable, the installation logic is broken down into several single-purpose shell scripts:
 
@@ -54,7 +54,7 @@ To keep the `Dockerfile` clean and maintainable, the installation logic is broke
 *   `install_jupyter_ext.sh`: Installs JupyterLab extensions (`beakerx`).
 *   `setup_user.sh`: Creates necessary directories and configures SSH for the `jovyan` user.
 
-**3. Runtime Execution (`resources/docker/image/entrypoint.sh`)**
+**3. Runtime Execution (`resources/entrypoint.sh`)**
 
 This script is executed every time a container is started from the image. Its responsibilities are:
 
