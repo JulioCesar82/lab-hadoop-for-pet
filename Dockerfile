@@ -60,6 +60,10 @@ RUN fix-permissions /opt/conda && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Copy the entrypoint script to profile.d to be sourced on login
+COPY resources/entrypoint.sh /etc/profile.d/entrypoint.sh
+RUN chmod +x /etc/profile.d/entrypoint.sh
+
 # --- Volta para o usuário non-root ---
 USER ${NB_USER}
 
@@ -68,7 +72,3 @@ WORKDIR /home/${NB_USER}/work
 
 # Copia os arquivos do JupterLab para o diretório de trabalho
 COPY labs .
-
-# Copy the entrypoint script to profile.d to be sourced on login
-COPY resources/entrypoint.sh /etc/profile.d/entrypoint.sh
-RUN chmod +x /etc/profile.d/entrypoint.sh
