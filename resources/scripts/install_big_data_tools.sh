@@ -28,3 +28,13 @@ wget -q https://archive.apache.org/dist/flume/${FLUME_VERSION}/apache-flume-${FL
     rm apache-flume-${FLUME_VERSION}-bin.tar.gz && \
     mv apache-flume-${FLUME_VERSION}-bin flume-${FLUME_VERSION}
 
+
+
+# Download PostgreSQL JDBC driver
+wget -q https://jdbc.postgresql.org/download/postgresql-42.2.5.jar -O postgresql-driver.jar
+chmod 644 postgresql-driver.jar
+
+# Copy driver to all relevant lib directories
+cp postgresql-driver.jar ${SQOOP_HOME}/lib/
+cp postgresql-driver.jar ${HIVE_HOME}/lib/
+cp postgresql-driver.jar ${HADOOP_HOME}/share/hadoop/common/lib/
