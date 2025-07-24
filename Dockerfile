@@ -27,7 +27,7 @@ ENV PDSH_RCMD_TYPE=ssh
 COPY resources/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY resources/scripts/ /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/*.sh
 
 WORKDIR /home/${NB_USER}/resources
 
@@ -35,9 +35,9 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
     /usr/local/bin/set_env_vars.sh && \
     /usr/local/bin/install_system_deps.sh && \
     /usr/local/bin/install_dev_tools.sh && \
+    /usr/local/bin/install_big_data_tools.sh && \
     /usr/local/bin/install_python_deps.sh && \
     /usr/local/bin/install_jupyter_ext.sh && \
-    /usr/local/bin/install_big_data_tools.sh && \
     /usr/local/bin/setup_user.sh
 
 # Ensure all resources are owned by the non-root user
