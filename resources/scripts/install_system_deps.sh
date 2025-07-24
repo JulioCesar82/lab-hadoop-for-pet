@@ -20,3 +20,15 @@ apt-get install -y --no-install-recommends \
 
 # Clean up the apt config file
 rm /etc/apt/apt.conf.d/99-no-check-valid-until
+
+
+
+# Download PostgreSQL JDBC driver
+wget -q https://jdbc.postgresql.org/download/postgresql-42.2.5.jar -O postgresql-driver.jar
+chmod 644 postgresql-driver.jar
+
+# Copy driver to all relevant lib directories
+cp postgresql-driver.jar ${SQOOP_HOME}/lib/
+cp postgresql-driver.jar ${HIVE_HOME}/lib/
+cp postgresql-driver.jar ${HADOOP_HOME}/share/hadoop/common/lib/
+

@@ -24,8 +24,8 @@ ENV HADOOP_SSH_OPTS="-o StrictHostKeyChecking=no -p 8822"
 ENV PDSH_RCMD_TYPE=ssh
 
 # Copia scripts de instalação e executa os scripts de instalação de dependências gerais, dependências Python e Jupyter
-COPY resources/docker/image/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY resources/docker/image/scripts/ /usr/local/bin/
+COPY resources/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY resources/scripts/ /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
@@ -69,8 +69,6 @@ WORKDIR /home/${NB_USER}/work
 # Copia os arquivos do JupterLab para o diretório de trabalho
 COPY labs .
 
-# Define o script de entrada
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Comando padrão para iniciar o JupyterLab
-CMD ["start-notebook.sh"]
+# Copy the entrypoint script to profile.d to be sourced on login
+COPY resources/entrypoint.sh /etc/profile.d/entrypoint.sh
+RUN chmod +x /etc/profile.d/entrypoint.sh

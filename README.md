@@ -33,7 +33,7 @@ docker run -d -p 8889:8888 --name my-jupter-hadoop-pets julio471/jupter-hadoop-p
 ou Build local (menos recomendado porque demora muito, gerando um Container por volta de 4 a 5 GB):
 
 ```bash
-docker build -t jupter-hadoop-pets -f resources/docker/image/Dockerfile .
+docker build -t jupter-hadoop-pets -f Dockerfile .
 docker run -d -p 8889:8888 --name my-jupter-hadoop-pets jupter-hadoop-pets start-notebook.py --NotebookApp.token='my-token'
 ```
 

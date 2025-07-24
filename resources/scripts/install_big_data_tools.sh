@@ -27,3 +27,4 @@ wget -q https://archive.apache.org/dist/flume/${FLUME_VERSION}/apache-flume-${FL
     tar -xf apache-flume-${FLUME_VERSION}-bin.tar.gz > /dev/null && \
     rm apache-flume-${FLUME_VERSION}-bin.tar.gz && \
     mv apache-flume-${FLUME_VERSION}-bin flume-${FLUME_VERSION}
+
