@@ -1,7 +1,7 @@
 ### Building locally and pushing to dockerhub
 
 ```bash
-docker build -t jupter-hadoop-pets -f Dockerfile .
+docker build -t jupter-hadoop-pets -f Dockerfile.development .
 
 docker login
 
