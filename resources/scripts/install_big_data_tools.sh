@@ -34,6 +34,9 @@ wget -q https://archive.apache.org/dist/flume/${FLUME_VERSION}/apache-flume-${FL
 wget -q https://jdbc.postgresql.org/download/postgresql-42.2.5.jar -O postgresql-driver.jar
 chmod 644 postgresql-driver.jar
 
+# Create lib directory for Hive if it doesn't exist
+mkdir -p ${HIVE_HOME}/lib
+
 # Copy driver to all relevant lib directories
 cp postgresql-driver.jar ${SQOOP_HOME}/lib/
 cp postgresql-driver.jar ${HIVE_HOME}/lib/
