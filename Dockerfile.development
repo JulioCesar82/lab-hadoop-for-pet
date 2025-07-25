@@ -5,6 +5,8 @@ USER root
 
 # Define as variáveis de ambiente
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV PATH=$PATH:${JAVA_HOME}/bin
+
 ENV HADOOP_VERSION=2.9.2
 ENV HIVE_VERSION=2.3.9
 ENV SQOOP_VERSION=1.4.7
@@ -62,8 +64,6 @@ RUN fix-permissions /opt/conda && \
 COPY resources/entrypoint.sh /etc/profile.d/entrypoint.sh
 RUN chmod +x /etc/profile.d/entrypoint.sh
 
-RUN sed -i 's/\r$//' /etc/profile.d/entrypoint.sh && \
-    /etc/profile.d/entrypoint.sh
 
 # --- Volta para o usuário non-root ---
 USER ${NB_USER}
@@ -73,3 +73,5 @@ WORKDIR /home/${NB_USER}/work
 
 # Copia os arquivos do JupterLab para o diretório de trabalho
 COPY labs .
+
+ENTRYPOINT ["/etc/profile.d/entrypoint.sh"]
