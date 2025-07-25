@@ -16,6 +16,8 @@ apt-get install -y --no-install-recommends \
     unzip \
     wget \
     postgresql \
+    postgresql-contrib \
+    postgresql-client \
     redis-server
 
 # Clean up the apt config file

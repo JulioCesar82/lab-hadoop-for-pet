@@ -23,17 +23,18 @@ Usando recursos da Binder:
 [![Binder a partir do Dockerfile](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JulioCesar82/lab-hadoop-for-pet/master?urlpath=lab/tree/labs)
 
 
-ou via DockerHub:
+ou localmente (mais recomendado via DockerHub):
 
 ```bash
-docker run -d -p 8889:8888 --name my-jupter-hadoop-pets julio471/jupter-hadoop-pets:3.0 start-notebook.py --NotebookApp.token='my-token'
+docker run -d -p 8889:8888 --name my-jupter-hadoop-pets julio471/jupter-hadoop-pets:5.0 start-notebook.py --NotebookApp.token='my-token'
 ```
+e acesse: [http://localhost:8889/lab?token=my-token](http://localhost:8889/lab?token=my-token)
 
 
 ou Build local (menos recomendado porque demora muito, gerando um Container por volta de 4 a 5 GB):
 
 ```bash
-docker build -t jupter-hadoop-pets -f Dockerfile .
+docker build -t jupter-hadoop-pets -f Dockerfile.development .
 docker run -d -p 8889:8888 --name my-jupter-hadoop-pets jupter-hadoop-pets start-notebook.py --NotebookApp.token='my-token'
 ```
 
