@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 # Create a logs directory if it doesn't exist
 mkdir -p ~/logs
@@ -6,14 +7,16 @@ mkdir -p ~/logs
 # Start services in the background
 echo "Starting services..."
 nohup redis-server &> ~/logs/redis.log &
-/usr/sbin/sshd -f ~/resources/configs/ssh/sshd_config &
+sudo /usr/sbin/sshd -f /etc/ssh/sshd_config &
 nohup ~/resources/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
 
 # Start and configure PostgreSQL
-service postgresql start
+# Start PostgreSQL directly as the postgres user
+# Start PostgreSQL as root, then switch to postgres user for database setup
+sudo pg_ctlcluster 14 main start
 sleep 5
-su - postgres -c "psql --quiet -c \"CREATE USER ${NB_USER} WITH SUPERUSER;\"" 2>/dev/null || echo "User ${NB_USER} already exists."
-su - postgres -c "psql --quiet -c \"CREATE DATABASE postgres;\"" 2>/dev/null || echo "Database postgres already exists."
+sudo -u postgres psql --quiet -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
+sudo -u postgres psql --quiet -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL to be ready..."
@@ -26,12 +29,14 @@ echo "PostgreSQL is ready."
 # Format and start Hadoop
 echo "Formatting and starting Hadoop..."
 hdfs namenode -format -force -nonInteractive &> ~/logs/hadoop-format.log
-start-dfs.sh &> ~/logs/hadoop-dfs.log
-start-yarn.sh &> ~/logs/hadoop-yarn.log
+# Source Hadoop environment variables
+. ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
+start-dfs.sh &> ~/logs/hadoop-dfs.log 2>&1
+start-yarn.sh &> ~/logs/hadoop-yarn.log 2>&1
 
 # Wait for Hadoop to be ready
 echo "Waiting for NameNode process to start..."
-while ! jps | grep -q NameNode; do
+while ! sudo jps | grep -q NameNode; do
     echo "NameNode process not found, waiting..."
     sleep 2
 done
