@@ -10,10 +10,10 @@ nohup redis-server &> ~/logs/redis.log &
 nohup ~/resources/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
 
 # Start and configure PostgreSQL
-sudo service postgresql start
+service postgresql start
 sleep 5
-sudo -u postgres psql --quiet -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
-sudo -u postgres psql --quiet -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
+su - postgres -c "psql --quiet -c \"CREATE USER ${NB_USER} WITH SUPERUSER;\"" 2>/dev/null || echo "User ${NB_USER} already exists."
+su - postgres -c "psql --quiet -c \"CREATE DATABASE postgres;\"" 2>/dev/null || echo "Database postgres already exists."
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL to be ready..."
