@@ -51,8 +51,6 @@ USER ${NB_USER}
 
 # Copia os arquivos de configuração do Hadoop com a propriedade correta
 COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
-COPY --chown=${NB_USER}:${NB_GID} resources/configs/ssh/sshd_config ${HADOOP_HOME}/resources/configs/ssh/sshd_config
-
 # --- Configuração final como root ---
 USER root
 
@@ -60,7 +58,25 @@ USER root
 RUN fix-permissions /opt/conda && \
     fix-permissions /home/${NB_USER} && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /var/run/postgresql && \
+    chown postgres:postgres /var/run/postgresql && \
+    chmod 775 /var/run/postgresql && \
+    echo "${NB_USER} ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql *, /usr/bin/pg_ctlcluster *, /usr/sbin/sshd, /usr/bin/jps" > /etc/sudoers.d/notebook && \
+    chmod 0440 /etc/sudoers.d/notebook
+
+# Generate SSH host keys and set permissions
+RUN mkdir -p /etc/ssh && \
+    rm -f /etc/ssh/ssh_host_* && \
+    ssh-keygen -A && \
+    chmod 600 /etc/ssh/*_key && \
+    chmod 644 /etc/ssh/*.pub && \
+    chown root:root /etc/ssh/* && \
+    chmod 755 /etc/ssh && \
+    ls -la /etc/ssh
+
+# Copia o arquivo de configuração do SSH para o local padrão
+COPY resources/configs/ssh/sshd_config /etc/ssh/sshd_config
 
 # --- Volta para o usuário non-root ---
 USER ${NB_USER}
