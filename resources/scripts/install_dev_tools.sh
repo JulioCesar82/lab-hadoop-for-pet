@@ -2,17 +2,9 @@
 set -e
 
 # --- Install Node.js ---
-# Download the setup script
-curl -sL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource_setup.sh
-
-# Execute the setup script
-bash /tmp/nodesource_setup.sh
-
-# Install Node.js itself
+export DEBIAN_FRONTEND=noninteractive
+curl -sL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y --no-install-recommends nodejs
-
-# Clean up the setup script
-rm /tmp/nodesource_setup.sh
 
 # --- Install OpenJDK 8 ---
 JAVA_VERSION=jdk8u402-b06
