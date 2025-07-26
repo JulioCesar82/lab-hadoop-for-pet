@@ -7,8 +7,24 @@ mkdir -p ~/logs
 # Start services in the background
 echo "Starting services..."
 nohup redis-server &> ~/logs/redis.log &
-sudo /usr/sbin/sshd -f /etc/ssh/sshd_config &
+sudo /usr/sbin/sshd -f /etc/ssh/sshd_config &> ~/logs/sshd.log &
 nohup ~/resources/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
+
+# Wait for SSH port to be open
+echo "Waiting for SSH port 8822 to open..."
+while ! netstat -tuln | grep -q ':8822'; do
+    echo "Port 8822 is not open yet, waiting..."
+    sleep 2
+done
+echo "SSH port 8822 is open."
+
+# Wait for SSH to be ready for authentication
+echo "Waiting for SSH to be ready for authentication..."
+until ssh -o StrictHostKeyChecking=no -p 8822 ${NB_USER}@localhost exit; do
+    echo "SSH authentication failed, waiting..."
+    sleep 2
+done
+echo "SSH is ready for authentication."
 
 # Start and configure PostgreSQL
 # Start PostgreSQL directly as the postgres user
@@ -32,7 +48,7 @@ export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 hdfs namenode -format -force -nonInteractive &> ~/logs/hadoop-format.log
 # Source Hadoop environment variables
 . ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
-start-dfs.sh
+start-dfs.sh &> ~/logs/hadoop-dfs.log 2>&1
 start-yarn.sh &> ~/logs/hadoop-yarn.log 2>&1
 
 # Wait for Hadoop to be ready
