@@ -28,15 +28,16 @@ echo "PostgreSQL is ready."
 
 # Format and start Hadoop
 echo "Formatting and starting Hadoop..."
+export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 hdfs namenode -format -force -nonInteractive &> ~/logs/hadoop-format.log
 # Source Hadoop environment variables
 . ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
-start-dfs.sh &> ~/logs/hadoop-dfs.log 2>&1
+start-dfs.sh
 start-yarn.sh &> ~/logs/hadoop-yarn.log 2>&1
 
 # Wait for Hadoop to be ready
 echo "Waiting for NameNode process to start..."
-while ! sudo jps | grep -q NameNode; do
+while ! jps | grep -q NameNode; do
     echo "NameNode process not found, waiting..."
     sleep 2
 done

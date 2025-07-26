@@ -1,2 +1,2 @@
 # Arquivo utilizado pelo MYBinder, dessa forma o tempo de build é menor
-FROM julio471/jupter-hadoop-pets:6.0
+FROM julio471/jupter-hadoop-pets:7.0

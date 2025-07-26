@@ -44,8 +44,15 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
 # Ensure all resources are owned by the non-root user
 RUN chown -R ${NB_USER}:${NB_GID} /home/${NB_USER}/resources
 
+# Configura o SSH para o usuário jovyan
+# RUN mkdir -p /home/${NB_USER}/.ssh && \
+#     ssh-keygen -t rsa -b 4096 -f /home/${NB_USER}/.ssh/id_rsa -N "" && \
+#     cat /home/${NB_USER}/.ssh/id_rsa.pub >> /home/${NB_USER}/.ssh/authorized_keys && \
+#     chmod 600 /home/${NB_USER}/.ssh/authorized_keys
+
 # --- Configuração a nível de usuário ---
 USER ${NB_USER}
+
 
 # As variáveis de ambiente agora são definidas em /etc/profile.d/set_env_vars.sh
 
@@ -66,7 +73,8 @@ RUN fix-permissions /opt/conda && \
     chmod 0440 /etc/sudoers.d/notebook
 
 # Generate SSH host keys and set permissions
-RUN mkdir -p /etc/ssh && \
+RUN mkdir -p /var/run/sshd && \
+    mkdir -p /etc/ssh && \
     rm -f /etc/ssh/ssh_host_* && \
     ssh-keygen -A && \
     chmod 600 /etc/ssh/*_key && \
