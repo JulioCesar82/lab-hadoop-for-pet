@@ -38,23 +38,28 @@ RUN sed -i 's/\r$//' /usr/local/bin/*.sh && \
     /usr/local/bin/install_dev_tools.sh && \
     /usr/local/bin/install_big_data_tools.sh && \
     /usr/local/bin/install_python_deps.sh && \
-    /usr/local/bin/install_jupyter_ext.sh && \
-    /usr/local/bin/setup_user.sh
+    /usr/local/bin/install_jupyter_ext.sh
 
 # Ensure all resources are owned by the non-root user
 RUN chown -R ${NB_USER}:${NB_GID} /home/${NB_USER}/resources
 
-# Configura o SSH para o usuário jovyan
-# RUN mkdir -p /home/${NB_USER}/.ssh && \
-#     ssh-keygen -t rsa -b 4096 -f /home/${NB_USER}/.ssh/id_rsa -N "" && \
-#     cat /home/${NB_USER}/.ssh/id_rsa.pub >> /home/${NB_USER}/.ssh/authorized_keys && \
-#     chmod 600 /home/${NB_USER}/.ssh/authorized_keys
+# Set correct permissions for the user's home directory and remove set-UID/set-GID bits
+RUN chmod 700 /home/${NB_USER} && chmod u-s,g-s /home/${NB_USER}
 
 # --- Configuração a nível de usuário ---
 USER ${NB_USER}
 
-
 # As variáveis de ambiente agora são definidas em /etc/profile.d/set_env_vars.sh
+
+# Run setup_user.sh as NB_USER to generate SSH keys in the correct home directory
+RUN /usr/local/bin/setup_user.sh && \
+    chmod 700 /home/${NB_USER}/.ssh && \
+    chmod 600 /home/${NB_USER}/.ssh/authorized_keys && \
+    chmod g-s /home/${NB_USER}/.ssh && \
+    echo "--- Debugging SSH permissions and content ---" && \
+    ls -la /home/${NB_USER}/.ssh && \
+    cat /home/${NB_USER}/.ssh/authorized_keys && \
+    echo "--- End Debugging SSH permissions and content ---"
 
 # Copia os arquivos de configuração do Hadoop com a propriedade correta
 COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
@@ -62,9 +67,7 @@ COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* $
 USER root
 
 # Garante que o usuário non-root tenha permissão para modificar os diretórios
-RUN fix-permissions /opt/conda && \
-    fix-permissions /home/${NB_USER} && \
-    apt-get clean && \
+RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/run/postgresql && \
     chown postgres:postgres /var/run/postgresql && \
