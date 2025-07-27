@@ -20,3 +20,4 @@ export CODE_SERVER_HOME=/home/${NB_USER}/resources/code-server-${CODE_SERVER_VER
 export PATH=$PATH:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${HIVE_HOME}/bin:${SQOOP_HOME}/bin:${HBASE_HOME}/bin:${FLUME_HOME}/bin:${CODE_SERVER_HOME}/bin
 export HADOOP_SSH_OPTS="-o StrictHostKeyChecking=no -p 8822"
 export PDSH_RCMD_TYPE=ssh
+export HADOOP_IDENT_STRING=jovyan

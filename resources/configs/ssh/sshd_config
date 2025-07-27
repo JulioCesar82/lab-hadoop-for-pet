@@ -7,5 +7,3 @@ PidFile /var/run/sshd.pid
 PubkeyAuthentication yes
 AuthorizedKeysFile /home/jovyan/.ssh/authorized_keys
 StrictModes no
-LogLevel DEBUG3
-PasswordAuthentication no
