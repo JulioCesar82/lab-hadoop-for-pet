@@ -31,9 +31,6 @@ echo "SSH is ready for authentication."
 # Start PostgreSQL as root, then switch to postgres user for database setup
 sudo pg_ctlcluster 14 main start
 sleep 5
-sudo -u postgres psql --quiet -c "ALTER USER postgres WITH PASSWORD 'postgres';"
-sudo -u postgres psql --quiet -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
-sudo -u postgres psql --quiet -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL to be ready..."
@@ -42,6 +39,10 @@ until pg_isready -h localhost -p 5432 -q; do
     sleep 2
 done
 echo "PostgreSQL is ready."
+
+sudo postgres psql --quiet -c "CREATE USER postgres WITH PASSWORD 'postgres';"
+sudo postgres psql --quiet -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
+sudo postgres psql --quiet -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
 
 # Format and start Hadoop
 echo "Formatting and starting Hadoop..."
