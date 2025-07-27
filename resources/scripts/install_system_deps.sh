@@ -13,6 +13,7 @@ apt-get upgrade -y --fix-missing || true
 apt-get install -y --no-install-recommends \
     ca-certificates \
     ssh \
+    maven \
     curl \
     unzip \
     wget \

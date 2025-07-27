@@ -71,7 +71,9 @@ RUN apt-get clean && \
     chown postgres:postgres /var/run/postgresql && \
     chmod 775 /var/run/postgresql && \
     echo "${NB_USER} ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql *, /usr/bin/pg_ctlcluster *, /usr/sbin/sshd, /usr/bin/jps" > /etc/sudoers.d/notebook && \
-    chmod 0440 /etc/sudoers.d/notebook
+    chmod 0440 /etc/sudoers.d/notebook && \
+    echo "${NB_USER}:password" | chpasswd && \
+    usermod -U ${NB_USER}
 
 # Generate SSH host keys and set permissions
 RUN mkdir -p /var/run/sshd && \
@@ -94,6 +96,6 @@ USER ${NB_USER}
 WORKDIR /home/${NB_USER}/work
 
 # Copia os arquivos do JupterLab para o diretório de trabalho
-COPY labs .
+COPY labs/* .
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

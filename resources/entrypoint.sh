@@ -7,7 +7,7 @@ mkdir -p ~/logs
 # Start services in the background
 echo "Starting services..."
 nohup redis-server &> ~/logs/redis.log &
-sudo /usr/sbin/sshd -d -f /etc/ssh/sshd_config &> ~/logs/sshd.log &
+sudo /usr/sbin/sshd -f /etc/ssh/sshd_config &> ~/logs/sshd.log &
 nohup ~/resources/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
 
 # Wait for SSH port to be open
@@ -22,7 +22,6 @@ echo "SSH port 8822 is open."
 echo "Waiting for SSH to be ready for authentication..."
 until ssh -o StrictHostKeyChecking=no -p 8822 ${NB_USER}@localhost exit; do
     echo "SSH authentication failed, waiting..."
-    cat ~/logs/sshd.log
     sleep 2
 done
 echo "SSH is ready for authentication."
@@ -32,6 +31,7 @@ echo "SSH is ready for authentication."
 # Start PostgreSQL as root, then switch to postgres user for database setup
 sudo pg_ctlcluster 14 main start
 sleep 5
+sudo -u postgres psql --quiet -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 sudo -u postgres psql --quiet -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
 sudo -u postgres psql --quiet -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
 
@@ -45,6 +45,7 @@ echo "PostgreSQL is ready."
 
 # Format and start Hadoop
 echo "Formatting and starting Hadoop..."
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 hdfs namenode -format -force -nonInteractive &> ~/logs/hadoop-format.log
 # Source Hadoop environment variables
@@ -56,6 +57,8 @@ start-yarn.sh &> ~/logs/hadoop-yarn.log 2>&1
 echo "Waiting for NameNode process to start..."
 while ! jps | grep -q NameNode; do
     echo "NameNode process not found, waiting..."
+    cat ~/logs/hadoop-dfs.log
+    cat ~/logs/hadoop-yarn.log
     sleep 2
 done
 echo "NameNode process started."
