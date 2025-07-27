@@ -11,6 +11,7 @@ apt-get install -f -y || true
 apt-get upgrade -y --fix-missing || true
 # apt-get install -y --no-install-recommends mvn 
 apt-get install -y --no-install-recommends \
+    ca-certificates \
     ssh \
     curl \
     unzip \
@@ -18,8 +19,9 @@ apt-get install -y --no-install-recommends \
     postgresql \
     postgresql-contrib \
     postgresql-client \
-    redis-server
+    redis-server \
+    net-tools \
+    iproute2
 
 # Clean up the apt config file
 rm /etc/apt/apt.conf.d/99-no-check-valid-until
-

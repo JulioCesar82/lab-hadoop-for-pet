@@ -53,9 +53,7 @@ USER ${NB_USER}
 
 # Run setup_user.sh as NB_USER to generate SSH keys in the correct home directory
 RUN /usr/local/bin/setup_user.sh && \
-    chmod 700 /home/${NB_USER}/.ssh && \
-    chmod 600 /home/${NB_USER}/.ssh/authorized_keys && \
-    chmod g-s /home/${NB_USER}/.ssh && \
+    chown -R ${NB_USER}:${NB_GID} /home/${NB_USER}/.ssh && \
     echo "--- Debugging SSH permissions and content ---" && \
     ls -la /home/${NB_USER}/.ssh && \
     cat /home/${NB_USER}/.ssh/authorized_keys && \
