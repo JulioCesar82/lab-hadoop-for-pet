@@ -61,6 +61,7 @@ RUN /usr/local/bin/setup_user.sh && \
 
 # Copia os arquivos de configuração do Hadoop com a propriedade correta
 COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
+RUN sed -i 's/\r$//' ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
 # --- Configuração final como root ---
 USER root
 
@@ -70,7 +71,9 @@ RUN apt-get clean && \
     mkdir -p /var/run/postgresql && \
     chown postgres:postgres /var/run/postgresql && \
     chmod 775 /var/run/postgresql && \
+    echo "${NB_USER} ALL=(postgres) NOPASSWD: ALL" > /etc/sudoers.d/postgres-access && \
     echo "${NB_USER} ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql *, /usr/bin/pg_ctlcluster *, /usr/sbin/sshd, /usr/bin/jps" > /etc/sudoers.d/notebook && \
+    chmod 0440 /etc/sudoers.d/postgres-access && \
     chmod 0440 /etc/sudoers.d/notebook && \
     echo "${NB_USER}:password" | chpasswd && \
     usermod -U ${NB_USER}
