@@ -47,6 +47,7 @@ sudo -u postgres psql -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Databa
 sudo -u postgres psql -c "CREATE SCHEMA IF NOT EXISTS public;"
 
 sudo -u postgres psql -c "CREATE USER postgres WITH PASSWORD 'postgres';" 2>/dev/null || echo "User postgres already exists."
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 sudo -u postgres psql -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
 
 echo "Concedendo permissoes para o usuario..."
