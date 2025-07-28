@@ -41,16 +41,16 @@ done
 echo "PostgreSQL is ready."
 
 
-sudo postgres psql -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
-sudo postgres psql -c "CREATE SCHEMA IF NOT EXISTS public;"
+sudo -u postgres psql -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
+sudo -u postgres psql -c "CREATE SCHEMA IF NOT EXISTS public;"
 
-sudo postgres psql -c "CREATE USER postgres WITH PASSWORD 'postgres';"
-sudo postgres psql -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
+sudo -u postgres psql -c "CREATE USER postgres WITH PASSWORD 'postgres';"
+sudo -u postgres psql -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
 
 echo "Concedendo permissoes para o usuario..."
-sudo postgres psql -c "GRANT USAGE ON SCHEMA public TO postgres;"
-sudo postgres psql -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;"
-sudo postgres psql -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;"
+sudo -u postgres psql -c "GRANT USAGE ON SCHEMA public TO postgres;"
+sudo -u postgres psql -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;"
+sudo -u postgres psql -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;"
 
 
 # Format and start Hadoop
