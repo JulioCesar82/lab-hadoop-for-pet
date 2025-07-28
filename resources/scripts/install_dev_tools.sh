@@ -4,7 +4,7 @@ set -e
 # --- Install Node.js ---
 export DEBIAN_FRONTEND=noninteractive
 curl -sL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y --no-install-recommends nodejs
+apt-get install -y --no-install-recommends nsolid
 
 # --- Install OpenJDK 8 ---
 JAVA_VERSION=jdk8u402-b06
