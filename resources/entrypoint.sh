@@ -40,11 +40,14 @@ until pg_isready -h localhost -p 5432 -q; do
 done
 echo "PostgreSQL is ready."
 
+# Change to a directory accessible by postgres user to avoid permission warnings
+cd /tmp
 
 sudo -u postgres psql -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
 sudo -u postgres psql -c "CREATE SCHEMA IF NOT EXISTS public;"
 
-sudo -u postgres psql -c "CREATE USER postgres WITH PASSWORD 'postgres';"
+sudo -u postgres psql -c "CREATE USER postgres WITH PASSWORD 'postgres';" 2>/dev/null || echo "User postgres already exists."
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 sudo -u postgres psql -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
 
 echo "Concedendo permissoes para o usuario..."
@@ -52,12 +55,20 @@ sudo -u postgres psql -c "GRANT USAGE ON SCHEMA public TO postgres;"
 sudo -u postgres psql -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;"
 sudo -u postgres psql -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;"
 
+# Return to the previous directory
+cd -
+
 
 # Format and start Hadoop
 echo "Formatting and starting Hadoop..."
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
-hdfs namenode -format -force -nonInteractive &> ~/logs/hadoop-format.log
+if [ ! -d /tmp/hadoop-jovyan/dfs/name/current ]; then
+  echo "Formatting HDFS..."
+  hdfs namenode -format -force -nonInteractive &> ~/logs/hadoop-format.log
+else
+  echo "HDFS already formatted."
+fi
 
 # Source Hadoop environment variables
 . ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
