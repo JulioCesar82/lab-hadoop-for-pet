@@ -62,6 +62,9 @@ RUN /usr/local/bin/setup_user.sh && \
 # Copia os arquivos de configuração do Hadoop com a propriedade correta
 COPY --chown=${NB_USER}:${NB_GID} resources/configs/hadoop/${HADOOP_VERSION}/* ${HADOOP_HOME}/etc/hadoop/
 RUN sed -i 's/\r$//' ${HADOOP_HOME}/etc/hadoop/hadoop-env.sh
+
+# Copia os arquivos de configuração do Sqoop
+COPY --chown=${NB_USER}:${NB_GID} resources/configs/sqoop/* ${SQOOP_HOME}/conf/
 # --- Configuração final como root ---
 USER root
 
