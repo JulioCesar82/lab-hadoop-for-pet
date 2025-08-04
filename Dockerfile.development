@@ -104,4 +104,5 @@ WORKDIR /home/${NB_USER}/work
 # Copia os arquivos do JupterLab para o diretório de trabalho
 COPY --chown=${NB_USER}:${NB_GID} labs/* .
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# RUN /usr/local/bin/entrypoint.sh
