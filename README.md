@@ -17,7 +17,7 @@ Um laboratório para aprendizado de Hadoop, Redis e PostgreSQL para Pets.
 Localmente (mais recomendado via DockerHub):
 
 ```bash
-docker run -d -p 8889:8888 --name my-jupter-hadoop-pets julio471/jupter-hadoop-pets:13.0 start-notebook.py --NotebookApp.token='my-token'
+docker run -d -p 8889:8888 --name my-jupter-hadoop-pets julio471/jupter-hadoop-pets:14.0 start-notebook.py --NotebookApp.token='my-token'
 ```
 e acesse: [http://localhost:8889/lab?token=my-token](http://localhost:8889/lab?token=my-token)
 
