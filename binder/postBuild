@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# starting in parallel
+/usr/local/bin/entrypoint.sh &

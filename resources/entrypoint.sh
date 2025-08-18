@@ -26,38 +26,57 @@ until ssh -o StrictHostKeyChecking=no -p 8822 ${NB_USER}@localhost exit; do
 done
 echo "SSH is ready for authentication."
 
-# Start and configure PostgreSQL
-# Start PostgreSQL directly as the postgres user
-# Start PostgreSQL as root, then switch to postgres user for database setup
-pg_ctlcluster 14 main start
-sleep 1
+# Start and configure PostgreSQL using a non-root method
+echo "Initializing PostgreSQL in user's home directory..."
 
-# Wait for PostgreSQL to be ready
+# Add PostgreSQL binaries to the PATH (version 14 is assumed from logs)
+export PATH="/usr/lib/postgresql/14/bin:$PATH"
+
+# Define local directories for PostgreSQL
+PG_HOME="$HOME/postgres_nonroot"
+PG_DATA="$PG_HOME/data"
+PG_LOG="$PG_HOME/log"
+
+# Create directories if they don't exist
+mkdir -p "$PG_DATA" "$PG_LOG"
+
+# Initialize the database cluster if it doesn't exist
+if [ ! -f "$PG_DATA/PG_VERSION" ]; then
+    echo "Initializing new PostgreSQL cluster in $PG_DATA..."
+    initdb -D "$PG_DATA" > "$PG_LOG/initdb.log" 2>&1
+else
+    echo "PostgreSQL cluster already exists in $PG_DATA."
+fi
+
+# Start the PostgreSQL server
+echo "Starting PostgreSQL server..."
+pg_ctl -D "$PG_DATA" -l "$PG_LOG/postgresql.log" -o "-p 5432" start
+
+# Wait for PostgreSQL to be ready with a timeout
 echo "Waiting for PostgreSQL to be ready..."
-until pg_isready -h localhost -p 5432 -q; do
-    echo "PostgreSQL is not ready yet, waiting..."
+for i in {1..20}; do
+    if pg_isready -h localhost -p 5432 -q; then
+        echo "PostgreSQL is ready."
+        break
+    fi
+    echo "PostgreSQL not ready, waiting... (attempt $i/20)"
     sleep 1
 done
-echo "PostgreSQL is ready."
 
-# Change to a directory accessible by postgres user to avoid permission warnings
-cd /tmp
+# Final check, exit if it failed to start
+if ! pg_isready -h localhost -p 5432 -q; then
+    echo "ERROR: PostgreSQL failed to start after 20 seconds."
+    echo "Displaying last 50 lines of log for debugging:"
+    tail -n 50 "$PG_LOG/postgresql.log"
+    exit 1
+fi
 
-psql -U postgres -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
-psql -U postgres -c "CREATE SCHEMA IF NOT EXISTS public;"
-
-psql -U postgres -c "CREATE USER postgres WITH PASSWORD 'postgres';" 2>/dev/null || echo "User postgres already exists."
-psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'postgres';"
-psql -U postgres -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
-
-echo "Concedendo permissoes para o usuario..."
-psql -U postgres -c "GRANT USAGE ON SCHEMA public TO postgres;"
-psql -U postgres -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;"
-psql -U postgres -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;"
-
-# Return to the previous directory
-cd -
-
+# Configure database and users to mimic a standard setup.
+# The user running the script (${NB_USER}) is the default superuser.
+echo "Configuring PostgreSQL database and users..."
+createdb postgres 2>/dev/null || echo "Database 'postgres' already exists."
+psql -d postgres -c "CREATE USER postgres WITH PASSWORD 'postgres' SUPERUSER;" 2>/dev/null || psql -d postgres -c "ALTER USER postgres WITH SUPERUSER PASSWORD 'postgres';"
+psql -d postgres -c "GRANT ALL ON SCHEMA public TO postgres;"
 
 # Format and start Hadoop
 echo "Formatting and starting Hadoop..."
