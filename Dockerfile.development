@@ -72,12 +72,8 @@ USER root
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/run/postgresql && \
-    chown postgres:postgres /var/run/postgresql && \
-    chmod 775 /var/run/postgresql && \
-    echo "${NB_USER} ALL=(postgres) NOPASSWD: ALL" > /etc/sudoers.d/postgres-access && \
-    echo "${NB_USER} ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql *, /usr/bin/pg_ctlcluster *, /usr/sbin/sshd, /usr/bin/jps" > /etc/sudoers.d/notebook && \
-    chmod 0440 /etc/sudoers.d/postgres-access && \
-    chmod 0440 /etc/sudoers.d/notebook && \
+    chown -R ${NB_USER}:${NB_GID} /var/run/postgresql /var/lib/postgresql && \
+    chmod -R 775 /var/run/postgresql /var/lib/postgresql && \
     echo "${NB_USER}:password" | chpasswd && \
     usermod -U ${NB_USER}
 
@@ -86,10 +82,10 @@ RUN mkdir -p /var/run/sshd && \
     mkdir -p /etc/ssh && \
     rm -f /etc/ssh/ssh_host_* && \
     ssh-keygen -A && \
-    chmod 600 /etc/ssh/*_key && \
-    chmod 644 /etc/ssh/*.pub && \
+    chmod 777 /etc/ssh/*_key && \
+    chmod 777 /etc/ssh/*.pub && \
     chown root:root /etc/ssh/* && \
-    chmod 755 /etc/ssh && \
+    chmod 777 /etc/ssh && \
     ls -la /etc/ssh
 
 # Copia o arquivo de configuração do SSH para o local padrão
