@@ -7,7 +7,7 @@ mkdir -p ~/logs
 # Start services in the background
 echo "Starting services..."
 nohup redis-server &> ~/logs/redis.log &
-sudo /usr/sbin/sshd -f /etc/ssh/sshd_config &> ~/logs/sshd.log &
+/usr/sbin/sshd -f /etc/ssh/sshd_config &> ~/logs/sshd.log &
 nohup ~/resources/code-server-${CODE_SERVER_VERSION}/bin/code-server &> ~/logs/vscode.log &
 
 # Wait for SSH port to be open
@@ -29,7 +29,7 @@ echo "SSH is ready for authentication."
 # Start and configure PostgreSQL
 # Start PostgreSQL directly as the postgres user
 # Start PostgreSQL as root, then switch to postgres user for database setup
-sudo pg_ctlcluster 14 main start
+pg_ctlcluster 14 main start
 sleep 1
 
 # Wait for PostgreSQL to be ready
@@ -43,17 +43,17 @@ echo "PostgreSQL is ready."
 # Change to a directory accessible by postgres user to avoid permission warnings
 cd /tmp
 
-sudo -u postgres psql -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
-sudo -u postgres psql -c "CREATE SCHEMA IF NOT EXISTS public;"
+psql -U postgres -c "CREATE DATABASE postgres;" 2>/dev/null || echo "Database postgres already exists."
+psql -U postgres -c "CREATE SCHEMA IF NOT EXISTS public;"
 
-sudo -u postgres psql -c "CREATE USER postgres WITH PASSWORD 'postgres';" 2>/dev/null || echo "User postgres already exists."
-sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
-sudo -u postgres psql -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
+psql -U postgres -c "CREATE USER postgres WITH PASSWORD 'postgres';" 2>/dev/null || echo "User postgres already exists."
+psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+psql -U postgres -c "CREATE USER ${NB_USER} WITH SUPERUSER;" 2>/dev/null || echo "User ${NB_USER} already exists."
 
 echo "Concedendo permissoes para o usuario..."
-sudo -u postgres psql -c "GRANT USAGE ON SCHEMA public TO postgres;"
-sudo -u postgres psql -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;"
-sudo -u postgres psql -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;"
+psql -U postgres -c "GRANT USAGE ON SCHEMA public TO postgres;"
+psql -U postgres -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;"
+psql -U postgres -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;"
 
 # Return to the previous directory
 cd -
