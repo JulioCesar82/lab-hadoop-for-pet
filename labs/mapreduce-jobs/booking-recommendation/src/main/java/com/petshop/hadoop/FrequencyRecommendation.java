@@ -27,7 +27,7 @@ public class FrequencyRecommendation extends Configured implements Tool {
 
     private static final Log LOG = LogFactory.getLog(FrequencyRecommendation.class);
 
-    // Mapper: Emite (pet_id, data_agendamento)
+    // Mapper: Emite (pet_id, suggested_date)
     public static class FrequencyMapper extends Mapper<Object, Text, Text, Text> {
         private static final Log LOG = LogFactory.getLog(FrequencyMapper.class);
         private Text petId = new Text();
