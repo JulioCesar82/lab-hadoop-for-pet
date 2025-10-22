@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class VaccineRecommendation extends Configured implements Tool {
@@ -121,6 +123,12 @@ public class VaccineRecommendation extends Configured implements Tool {
                             LOG.debug("Recomendação para vacina '" + vaccineName + "' ignorada pois a data já passou.");
                         }
                     }
+                    else {
+                        LOG.debug("Vacina '" + vaccineName + "' não aplicável para espécie '" + species + "' de " + key.toString() + ", pulando recomendação.");
+                    }
+                }
+                else {
+                    LOG.debug("Vacina '" + vaccineName + "' já aplicada para " + key.toString() + ", pulando recomendação.");
                 }
             }
         }
@@ -130,10 +138,13 @@ public class VaccineRecommendation extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         LOG.info("Iniciando o job VaccineRecommendation...");
         if (args.length != 2) {
-            LOG.error("Uso: VaccineRecommendation <input path> <output path>");
+            LOG.error("Argumentos inválidos! Uso: VaccineRecommendation <input path> <output path>");
             System.err.println("Usage: VaccineRecommendation <input path> <output path>");
             return -1;
         }
+
+        LOG.info("Caminho de entrada: " + args[0]);
+        LOG.info("Caminho de saída: " + args[1]);
 
         Configuration conf = getConf();
         Job job = Job.getInstance(conf, "Vaccine Recommendation");
