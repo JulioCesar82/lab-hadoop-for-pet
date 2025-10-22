@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.petshop</groupId>
-    <artifactId>recommendation-frequency</artifactId>
+    <artifactId>vaccine-recommendation</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Recommendation Frequency MapReduce Job</name>
+    <name>Vaccine Recommendation MapReduce Job</name>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -55,7 +55,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.petshop.hadoop.FrequencyRecommendation</mainClass>
+                            <mainClass>com.petshop.hadoop.VaccineRecommendation</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
