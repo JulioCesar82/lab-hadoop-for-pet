@@ -14,7 +14,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
-public class LTVCalculation {
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+public class LTVCalculation extends Configured implements Tool {
 
     private static final Log LOG = LogFactory.getLog(LTVCalculation.class);
 
@@ -63,19 +67,20 @@ public class LTVCalculation {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public int run(String[] args) throws Exception {
         LOG.info("Iniciando job LTVCalculation...");
 
         if (args.length != 2) {
             LOG.error("Argumentos inválidos! Uso: LTVCalculation <input path> <output path>");
             System.err.println("Uso: LTVCalculation <input path> <output path>");
-            System.exit(-1);
+            return -1;
         }
 
         LOG.info("Caminho de entrada: " + args[0]);
         LOG.info("Caminho de saída: " + args[1]);
 
-        Configuration conf = new Configuration();
+        Configuration conf = getConf();
         Job job = Job.getInstance(conf, "LTV by Pet Profile");
         job.setJarByClass(LTVCalculation.class);
         job.setMapperClass(LTVMapper.class);
@@ -93,6 +98,11 @@ public class LTVCalculation {
         } else {
             LOG.error("Job LTVCalculation falhou.");
         }
-        System.exit(success ? 0 : 1);
+        return success ? 0 : 1;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int res = ToolRunner.run(new Configuration(), new LTVCalculation(), args);
+        System.exit(res);
     }
 }
