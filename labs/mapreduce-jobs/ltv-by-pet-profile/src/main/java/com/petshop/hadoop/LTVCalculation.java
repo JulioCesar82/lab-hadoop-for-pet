@@ -30,7 +30,7 @@ public class LTVCalculation extends Configured implements Tool {
 
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
             LOG.debug("Processando linha de entrada: '" + value.toString() + "'");
-            // Formato da linha do Sqoop: Cão;Longo,123.45
+            // Formato da linha do Sqoop: Cão;Golden;Longo,123.45
             String[] fields = value.toString().split(",");
             if (fields.length == 2) {
                 try {

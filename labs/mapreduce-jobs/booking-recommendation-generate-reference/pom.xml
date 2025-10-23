@@ -4,17 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.petshop</groupId>
-    <artifactId>booking-recommendation</artifactId>
+    <artifactId>booking-recommendation-generate-reference</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Booking Recommendation MapReduce Job</name>
+    <name>Booking Reference MapReduce Job</name>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hadoop.version>2.9.2</hadoop.version> <!-- Corresponde ao Dockerfile -->
+        <hadoop.version>2.9.2</hadoop.version>
     </properties>
 
     <dependencies>
@@ -55,7 +55,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.petshop.hadoop.BookingRecommendation</mainClass>
+                            <mainClass>com.petshop.hadoop.BookingReference</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
