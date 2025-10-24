@@ -29,8 +29,8 @@ echo "SSH is ready for authentication."
 # Start and configure PostgreSQL using a non-root method
 echo "Initializing PostgreSQL in user's home directory..."
 
-# Add PostgreSQL binaries to the PATH (version 14 is assumed from logs)
-export PATH="/usr/lib/postgresql/14/bin:$PATH"
+# Add PostgreSQL binaries to the PATH (version 17 is assumed from logs)
+export PATH="/usr/lib/postgresql/17/bin:$PATH"
 
 # Define local directories for PostgreSQL
 PG_HOME="$HOME/postgres_nonroot"
