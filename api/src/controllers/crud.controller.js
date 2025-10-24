@@ -55,10 +55,40 @@ const remove = (service) => async (req, res) => {
     }
 };
 
+const createWithList = (service) => async (req, res) => {
+    try {
+        const items = await service.createWithList(req.body);
+        res.status(201).send(items);
+    } catch (error) {
+        res.status(400).send({ message: error.message });
+    }
+};
+
+const updateWithList = (service) => async (req, res) => {
+    try {
+        const items = await service.updateWithList(req.body);
+        res.send(items);
+    } catch (error) {
+        res.status(400).send({ message: error.message });
+    }
+};
+
+const deleteWithList = (service) => async (req, res) => {
+    try {
+        const items = await service.deleteWithList(req.body);
+        res.send({ message: 'Items deleted successfully', deletedItems: items });
+    } catch (error) {
+        res.status(400).send({ message: error.message });
+    }
+};
+
 module.exports = (service) => ({
     getAll: getAll(service),
     getById: getById(service),
     create: create(service),
     update: update(service),
     remove: remove(service),
+    createWithList: createWithList(service),
+    updateWithList: updateWithList(service),
+    deleteWithList: deleteWithList(service),
 });

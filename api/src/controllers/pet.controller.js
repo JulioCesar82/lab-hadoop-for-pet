@@ -44,28 +44,41 @@ const updateRecommendation = async (req, res) => {
     }
 };
 
-const createWithList = async (req, res) => {
+const getBookingRecommendations = async (req, res) => {
     try {
-        const pets = await petService.createWithList(req.body);
-        res.status(201).send(pets);
+        const { petId } = req.params;
+        const recommendations = await petService.getBookingRecommendations(petId);
+        res.send(recommendations);
     } catch (error) {
         res.status(400).send({ message: error.message });
     }
 };
 
-const updateWithList = async (req, res) => {
+const getVaccineRecommendations = async (req, res) => {
     try {
-        const pets = await petService.updateWithList(req.body);
-        res.send(pets);
+        const { petId } = req.params;
+        const recommendations = await petService.getVaccineRecommendations(petId);
+        res.send(recommendations);
     } catch (error) {
         res.status(400).send({ message: error.message });
     }
 };
 
-const deleteWithList = async (req, res) => {
+const disableBookingRecommendation = async (req, res) => {
     try {
-        const pets = await petService.deleteWithList(req.body);
-        res.send({ message: 'Pets deleted successfully', deletedPets: pets });
+        const { petId } = req.params;
+        await petService.disableBookingRecommendation(petId);
+        res.status(204).send();
+    } catch (error) {
+        res.status(400).send({ message: error.message });
+    }
+};
+
+const disableVaccineRecommendation = async (req, res) => {
+    try {
+        const { petId, vaccineName } = req.params;
+        await petService.disableVaccineRecommendation(petId, vaccineName);
+        res.status(204).send();
     } catch (error) {
         res.status(400).send({ message: error.message });
     }
@@ -76,7 +89,8 @@ module.exports = {
     findPetsByCriteria,
     uploadImage,
     updateRecommendation,
-    createWithList,
-    updateWithList,
-    deleteWithList,
+    getBookingRecommendations,
+    getVaccineRecommendations,
+    disableBookingRecommendation,
+    disableVaccineRecommendation,
 };

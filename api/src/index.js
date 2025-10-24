@@ -7,8 +7,11 @@ const port = process.env.API_PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const { swaggerUi, specs } = require('./config/swaggerConfig');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
 app.get('/', (req, res) => {
-  res.send('API for Petshop Hadoop Lab is running!');
+  res.redirect('/api-docs');
 });
 
 const routes = require('./routes');

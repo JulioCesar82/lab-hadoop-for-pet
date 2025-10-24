@@ -54,7 +54,7 @@ public class BookingReference extends Configured implements Tool {
         }
     }
 
-    // Reducer: Calcula a frequência média por perfil
+    // Reducer: Calcula a frequência média por perfil, removendo outliers
     public static class BookingReferenceReducer extends Reducer<Text, Text, Text, Text> {
         private static final Log LOG = LogFactory.getLog(BookingReferenceReducer.class);
         private Text result = new Text();
@@ -63,7 +63,8 @@ public class BookingReference extends Configured implements Tool {
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             LOG.info("Iniciando Reducer para o perfil: " + key.toString());
             Map<String, List<Date>> petsByProfile = new HashMap<>();
-            
+
+            // 1. Agrupa as datas por pet_id
             for (Text val : values) {
                 String[] parts = val.toString().split(",");
                 if (parts.length < 2) {
@@ -80,43 +81,65 @@ public class BookingReference extends Configured implements Tool {
             }
             LOG.debug("Perfil " + key.toString() + " contém " + petsByProfile.size() + " pets distintos.");
 
-            List<Long> averageFrequencies = new ArrayList<>();
-            for (Map.Entry<String, List<Date>> entry : petsByProfile.entrySet()) {
-                String petId = entry.getKey();
-                List<Date> dates = entry.getValue();
-                
+            // 2. Calcula a diferença em dias entre agendamentos para todos os pets do perfil
+            List<Long> allDiffs = new ArrayList<>();
+            for (List<Date> dates : petsByProfile.values()) {
                 if (dates.size() >= 2) {
                     Collections.sort(dates);
-                    List<Long> diffs = new ArrayList<>();
                     for (int i = 0; i < dates.size() - 1; i++) {
                         long diffInMillis = dates.get(i + 1).getTime() - dates.get(i).getTime();
-                        diffs.add(TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS));
+                        allDiffs.add(TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS));
                     }
-                    
-                    long sumOfDiffs = 0;
-                    for (Long diff : diffs) {
-                        sumOfDiffs += diff;
-                    }
-                    long petAverage = sumOfDiffs / diffs.size();
-                    averageFrequencies.add(petAverage);
-                    LOG.debug("Frequência média para o pet " + petId + " no perfil " + key.toString() + ": " + petAverage + " dias.");
-                } else {
-                    LOG.debug("Pet " + petId + " no perfil " + key.toString() + " ignorado por ter menos de 2 agendamentos (" + dates.size() + ").");
                 }
             }
 
-            if (!averageFrequencies.isEmpty()) {
-                long totalAverage = 0;
-                for (Long avg : averageFrequencies) {
-                    totalAverage += avg;
-                }
-                long finalAverage = totalAverage / averageFrequencies.size();
-                result.set(String.valueOf(finalAverage));
-                context.write(key, result);
-                LOG.info("Resultado final para o perfil " + key.toString() + " -> Frequência Média: " + finalAverage + " dias.");
-            } else {
-                LOG.warn("Nenhuma frequência média pôde ser calculada para o perfil: " + key.toString());
+            if (allDiffs.isEmpty()) {
+                LOG.warn("Nenhuma frequência pôde ser calculada para o perfil (sem pets com >= 2 agendamentos): " + key.toString());
+                return;
             }
+
+            // 3. Calcula a média e o desvio padrão
+            double sum = 0;
+            for (Long diff : allDiffs) {
+                sum += diff;
+            }
+            double mean = sum / allDiffs.size();
+
+            double standardDeviation = 0;
+            for (Long diff : allDiffs) {
+                standardDeviation += Math.pow(diff - mean, 2);
+            }
+            standardDeviation = Math.sqrt(standardDeviation / allDiffs.size());
+
+            // 4. Filtra outliers (considerando dados dentro de ~95% da distribuição normal)
+            double lowerBound = mean - 1.96 * standardDeviation;
+            double upperBound = mean + 1.96 * standardDeviation;
+            
+            List<Long> filteredDiffs = new ArrayList<>();
+            for (Long diff : allDiffs) {
+                if (diff >= lowerBound && diff <= upperBound) {
+                    filteredDiffs.add(diff);
+                }
+            }
+            
+            if (filteredDiffs.isEmpty()) {
+                LOG.warn("Todos os dados foram considerados outliers para o perfil: " + key.toString() + ". Usando a média original.");
+                // Se a filtragem remover todos os dados, fallback para a média original
+                result.set(String.valueOf(Math.round(mean)));
+                context.write(key, result);
+                return;
+            }
+
+            // 5. Calcula a média final com os dados filtrados
+            double filteredSum = 0;
+            for (Long diff : filteredDiffs) {
+                filteredSum += diff;
+            }
+            double finalAverage = filteredSum / filteredDiffs.size();
+
+            result.set(String.valueOf(Math.round(finalAverage)));
+            context.write(key, result);
+            LOG.info("Resultado final para o perfil " + key.toString() + " -> Frequência Média: " + Math.round(finalAverage) + " dias.");
         }
     }
 

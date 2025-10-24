@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import math
 from datetime import datetime
 from collections import defaultdict
 
@@ -34,6 +35,7 @@ def main():
         # Se o perfil mudou, processa o perfil anterior
         if current_profile and current_profile != profile:
             process_profile(current_profile, pet_dates_by_profile[current_profile])
+
             # Limpa o dicionário para o próximo perfil
             pet_dates_by_profile.pop(current_profile)
 
@@ -46,35 +48,48 @@ def main():
 
 def process_profile(profile, pet_dates):
     """
-    Calcula a frequência média para um perfil de pet.
+    Calcula a frequência média para um perfil de pet, removendo outliers.
     """
-    average_frequencies = []
+    all_diffs = []
     
-    # Itera sobre cada pet dentro do perfil
+    # 1. Coleta todas as diferenças de dias para o perfil
     for pet_id, dates in pet_dates.items():
-        # Precisa de pelo menos 2 datas para calcular a diferença
         if len(dates) < 2:
             continue
         
-        # Ordena as datas
         dates.sort()
         
-        # Calcula a diferença em dias entre agendamentos consecutivos
-        diffs = []
         for i in range(len(dates) - 1):
             time_diff = dates[i+1] - dates[i]
-            diffs.append(time_diff.days)
-        
-        # Calcula a frequência média para este pet
-        if diffs:
-            avg_freq = sum(diffs) / len(diffs)
-            average_frequencies.append(avg_freq)
+            all_diffs.append(time_diff.days)
             
-    # Calcula a média geral das frequências médias de todos os pets no perfil
-    if average_frequencies:
-        final_average = sum(average_frequencies) / len(average_frequencies)
-        # Emite o resultado final: perfil e a frequência média em dias (arredondado)
-        print('%s\t%d' % (profile, int(round(final_average))))
+    if not all_diffs:
+        return
+
+    # 2. Calcula média e desvio padrão
+    n = len(all_diffs)
+    if n == 0:
+        return
+        
+    mean = sum(all_diffs) / float(n)
+    
+    variance = sum([(x - mean) ** 2 for x in all_diffs]) / float(n)
+    std_dev = math.sqrt(variance)
+
+    # 3. Filtra outliers (intervalo de confiança de 95%)
+    lower_bound = mean - 1.96 * std_dev
+    upper_bound = mean + 1.96 * std_dev
+    
+    filtered_diffs = [d for d in all_diffs if lower_bound <= d <= upper_bound]
+    
+    if not filtered_diffs:
+        # Fallback para a média original se todos os dados forem outliers
+        final_average = mean
+    else:
+        # 4. Calcula a média final com dados filtrados
+        final_average = sum(filtered_diffs) / float(len(filtered_diffs))
+
+    print('%s\t%d' % (profile, int(round(final_average))))
 
 if __name__ == "__main__":
     main()
