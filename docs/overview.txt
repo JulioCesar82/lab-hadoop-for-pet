@@ -26,9 +26,9 @@ This project provides a fully containerized, portable lab environment for big da
 
 ### Architecture and Design
 
-The environment is built using a **multi-stage Dockerfile** to create an optimized and lean final image. This approach separates the build-time dependencies from the runtime environment, significantly reducing the image size.
+The environment is built using a **multi-stage Dockerfile-jupter** to create an optimized and lean final image. This approach separates the build-time dependencies from the runtime environment, significantly reducing the image size.
 
-**1. `Dockerfile` (`Dockerfile`)**
+**1. `Dockerfile-jupter` (`Dockerfile-jupter`)**
 
 This is the central component that defines the build process. It is structured in two main stages:
 
@@ -46,7 +46,7 @@ This is the central component that defines the build process. It is structured i
 
 **2. Modular Installation Scripts (`resources/scripts/`)**
 
-To keep the `Dockerfile` clean and maintainable, the installation logic is broken down into several single-purpose shell scripts:
+To keep the `Dockerfile-jupter` clean and maintainable, the installation logic is broken down into several single-purpose shell scripts:
 
 *   `install_system_deps.sh`: Installs all system packages using `apt-get`.
 *   `install_dev_tools.sh`: Installs Node.js and OpenJDK.

@@ -1,10 +1,11 @@
 const emailProvider = require('../providers/email');
+const { templatePath: emailTemplatePath, subject: emailSubject } = require('../config/email');
 const fs = require('fs');
 const path = require('path');
 
 const sendEmail = async (tutor, recommendations) => {
     try {
-        const templatePath = path.join(__dirname, '..', process.env.EMAIL_TEMPLATE_PATH);
+        const templatePath = path.join(__dirname, '..', emailTemplatePath);
         const template = fs.readFileSync(templatePath, 'utf-8');
 
         const recommendationsHtml = recommendations.map(rec => `<li>${rec.service_name} (Pet: ${rec.pet_name})</li>`).join('');
@@ -14,7 +15,7 @@ const sendEmail = async (tutor, recommendations) => {
 
         await emailProvider.send({
             to: tutor.email,
-            subject: process.env.EMAIL_SUBJECT,
+            subject: emailSubject,
             html
         });
 

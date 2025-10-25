@@ -47,13 +47,13 @@ hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
     -output $OUTPUT_DIR
 
 # Load results to Redis
-echo "Loading results to Redis..."
-redis-cli -h localhost KEYS "recommendation:booking:pet:*" | xargs -r redis-cli -h localhost DEL
-hdfs dfs -cat $OUTPUT_DIR/part-r-00000 | while IFS=$'\t' read -r pet_id values; do
-    sug_date=$(echo $values | cut -d',' -f1)
-    avg_freq=$(echo $values | cut -d',' -f2)
-    redis-cli -h localhost HSET "recommendation:booking:pet:$pet_id" suggested_date "$sug_date" average_frequency_days "$avg_freq"
-done
+# echo "Loading results to Redis..."
+# redis-cli -h localhost KEYS "recommendation:booking:pet:*" | xargs -r redis-cli -h localhost DEL
+# hdfs dfs -cat $OUTPUT_DIR/part-r-00000 | while IFS=$'\t' read -r pet_id values; do
+#     sug_date=$(echo $values | cut -d',' -f1)
+#     avg_freq=$(echo $values | cut -d',' -f2)
+#     redis-cli -h localhost HSET "recommendation:booking:pet:$pet_id" suggested_date "$sug_date" average_frequency_days "$avg_freq"
+# done
 
 # Load results to PostgreSQL
 echo "Loading results to PostgreSQL..."
