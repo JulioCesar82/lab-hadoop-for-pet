@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateApiKey } = require('../middleware/auth');
+router.use(authenticateApiKey);
 const batchController = require('../controllers/batch.controller');
 
 /**

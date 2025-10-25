@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const organizationService = require('../services/organization.service');
 
 const authenticateApiKey = async (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
@@ -7,12 +7,19 @@ const authenticateApiKey = async (req, res, next) => {
     }
 
     try {
-        const result = await pool.query('SELECT organization_id FROM organization_apikey WHERE api_key = $1 AND nenabled = TRUE', [apiKey]);
-        if (result.rows.length === 0) {
+        const organization = await organizationService.getOrganizationByApiKey(apiKey);
+        if (!organization) {
             return res.status(403).json({ message: 'Invalid API Key.' });
         }
 
-        req.organization_id = result.rows[0].organization_id;
+        if (organization.links && organization.links.length > 0) {
+            const referer = req.headers.referer || req.headers.origin;
+            if (!referer || !organization.links.some(link => referer.startsWith(link))) {
+                return res.status(403).json({ message: 'Referer not allowed.' });
+            }
+        }
+
+        req.organization_id = organization.organization_id;
         next();
     } catch (error) {
         res.status(500).json({ message: error.message });

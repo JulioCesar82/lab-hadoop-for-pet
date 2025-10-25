@@ -17,6 +17,9 @@ app.get('/', (req, res) => {
 const routes = require('./routes');
 app.use('/api', routes);
 
-app.listen(port, () => {
+const createDDL = require('./config/ddl');
+
+app.listen(port, async () => {
+  await createDDL();
   console.log(`Server is running on port ${port}`);
 });

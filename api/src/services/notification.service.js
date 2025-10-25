@@ -6,17 +6,17 @@
 
 const sendEmail = (tutor, recommendations) => {
     console.log(`[EMAIL] Enviando e-mail para ${tutor.email} sobre ${recommendations.length} novas recomendações.`);
-    // Lógica de envio de e-mail aqui...
+    // TODO: Lógica de envio de e-mail aqui...
 };
 
 const sendSMS = (tutor, recommendations) => {
     console.log(`[SMS] Enviando SMS para ${tutor.phone} sobre ${recommendations.length} novas recomendações.`);
-    // Lógica de envio de SMS aqui...
+    // TODO: Lógica de envio de SMS aqui...
 };
 
 const sendPushNotification = (tutor, recommendations) => {
     console.log(`[PUSH] Enviando Push Notification para o tutor ${tutor.name} (ID: ${tutor.tutor_id}) sobre ${recommendations.length} novas recomendações.`);
-    // Lógica de envio de Push Notification aqui...
+    // TODO: Lógica de envio de Push Notification aqui...
 };
 
 const notifyTutor = (tutor, recommendations) => {

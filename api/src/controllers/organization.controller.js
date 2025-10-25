@@ -15,7 +15,7 @@ const create = async (req, res) => {
 
 const findOne = async (req, res) => {
     try {
-        const organization = await organizationService.getOrganizationById(req.params.id);
+        const organization = await organizationService.getOrganizationById(req.organization_id);
         if (!organization) {
             return res.status(404).json({ message: 'Organization not found.' });
         }
@@ -25,7 +25,20 @@ const findOne = async (req, res) => {
     }
 };
 
+const disable = async (req, res) => {
+    try {
+        const disabledOrganization = await organizationService.disableOrganization(req.organization_id);
+        if (!disabledOrganization) {
+            return res.status(404).json({ message: 'Organization not found or already disabled.' });
+        }
+        res.status(200).json(disabledOrganization);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     create,
     findOne,
+    disable,
 };

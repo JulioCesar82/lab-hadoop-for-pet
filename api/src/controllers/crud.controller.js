@@ -1,6 +1,6 @@
 const getAll = (service) => async (req, res) => {
     try {
-        const items = await service.getAll();
+        const items = await service.getAll(req.organization.organization_id);
         res.send(items);
     } catch (error) {
         res.status(400).send({ message: error.message });
@@ -9,7 +9,7 @@ const getAll = (service) => async (req, res) => {
 
 const getById = (service) => async (req, res) => {
     try {
-        const item = await service.getById(req.params.id);
+        const item = await service.getById(req.params.id, req.organization.organization_id);
         if (item) {
             res.send(item);
         } else {
@@ -22,7 +22,7 @@ const getById = (service) => async (req, res) => {
 
 const create = (service) => async (req, res) => {
     try {
-        const item = await service.create(req.body);
+        const item = await service.create(req.body, req.organization.organization_id);
         res.status(201).send(item);
     } catch (error) {
         res.status(400).send({ message: error.message });
@@ -31,7 +31,7 @@ const create = (service) => async (req, res) => {
 
 const update = (service) => async (req, res) => {
     try {
-        const item = await service.update(req.params.id, req.body);
+        const item = await service.update(req.params.id, req.body, req.organization.organization_id);
         if (item) {
             res.send(item);
         } else {
@@ -44,7 +44,7 @@ const update = (service) => async (req, res) => {
 
 const remove = (service) => async (req, res) => {
     try {
-        const item = await service.remove(req.params.id);
+        const item = await service.remove(req.params.id, req.organization.organization_id);
         if (item) {
             res.send({ message: 'Item deleted successfully' });
         } else {
@@ -57,7 +57,7 @@ const remove = (service) => async (req, res) => {
 
 const createWithList = (service) => async (req, res) => {
     try {
-        const items = await service.createWithList(req.body);
+        const items = await service.createWithList(req.body, req.organization.organization_id);
         res.status(201).send(items);
     } catch (error) {
         res.status(400).send({ message: error.message });
@@ -66,7 +66,7 @@ const createWithList = (service) => async (req, res) => {
 
 const updateWithList = (service) => async (req, res) => {
     try {
-        const items = await service.updateWithList(req.body);
+        const items = await service.updateWithList(req.body, req.organization.organization_id);
         res.send(items);
     } catch (error) {
         res.status(400).send({ message: error.message });
@@ -75,7 +75,7 @@ const updateWithList = (service) => async (req, res) => {
 
 const deleteWithList = (service) => async (req, res) => {
     try {
-        const items = await service.deleteWithList(req.body);
+        const items = await service.deleteWithList(req.body, req.organization.organization_id);
         res.send({ message: 'Items deleted successfully', deletedItems: items });
     } catch (error) {
         res.status(400).send({ message: error.message });
