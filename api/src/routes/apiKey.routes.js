@@ -35,8 +35,6 @@ router.use(authenticateApiKey);
  *   post:
  *     summary: Create a new API key for the authenticated organization
  *     tags: [ApiKeys]
- *     security:
- *       - ApiKeyAuth: []
  *     responses:
  *       201:
  *         description: The API key was successfully created
@@ -55,8 +53,6 @@ router.post('/', apiKeyController.create);
  *   get:
  *     summary: Get all API keys for the authenticated organization
  *     tags: [ApiKeys]
- *     security:
- *       - ApiKeyAuth: []
  *     responses:
  *       200:
  *         description: A list of API keys
@@ -77,8 +73,6 @@ router.get('/', apiKeyController.findAll);
  *   delete:
  *     summary: Delete an API key
  *     tags: [ApiKeys]
- *     security:
- *       - ApiKeyAuth: []
  *     parameters:
  *       - in: path
  *         name: api_key

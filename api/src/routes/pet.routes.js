@@ -50,6 +50,9 @@ const express = require('express');
  */
 
 const router = express.Router();
+const { authenticateApiKey } = require('../middleware/auth');
+
+router.use(authenticateApiKey);
 const petController = require('../controllers/pet.controller');
 const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
 const multer = require('multer');

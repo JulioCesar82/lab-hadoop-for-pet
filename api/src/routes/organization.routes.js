@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const organizationController = require('../controllers/organization.controller');
-const { createOrganizationValidator, getOrganizationValidator } = require('../validators/organization.validator');
+const { createOrganizationValidator } = require('../validators/organization.validator');
+const { authenticateApiKey } = require('../middleware/auth');
 
 /**
  * @swagger
@@ -50,6 +51,7 @@ const { createOrganizationValidator, getOrganizationValidator } = require('../va
  *   post:
  *     summary: Create a new organization
  *     tags: [Organizations]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -115,20 +117,13 @@ router.post('/', createOrganizationValidator, organizationController.create);
 
 /**
  * @swagger
- * /organization/{id}:
+ * /organization:
  *   get:
- *     summary: Get the organization by id
+ *     summary: Get the organization
  *     tags: [Organizations]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: The organization id
  *     responses:
  *       200:
- *         description: The organization description by id
+ *         description: The organization description
  *         content:
  *           application/json:
  *             schema:
@@ -136,6 +131,24 @@ router.post('/', createOrganizationValidator, organizationController.create);
  *       404:
  *         description: The organization was not found
  */
-router.get('/:id', getOrganizationValidator, organizationController.findOne);
+router.get('/', authenticateApiKey, organizationController.findOne);
+
+/**
+ * @swagger
+ * /organization:
+ *   delete:
+ *     summary: Disable the organization
+ *     tags: [Organizations]
+ *     responses:
+ *       200:
+ *         description: The organization was successfully disabled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Organization'
+ *       404:
+ *         description: The organization was not found or already disabled
+ */
+router.delete('/', authenticateApiKey, organizationController.disable);
 
 module.exports = router;
