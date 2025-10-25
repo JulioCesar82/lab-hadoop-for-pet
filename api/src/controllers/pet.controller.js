@@ -18,13 +18,8 @@ const findPetsByCriteria = async (req, res) => {
 const uploadImage = async (req, res) => {
     try {
         const petId = req.params.petId;
-        //const imagePath = req.file.path;
+        const pet = await petService.uploadImage(petId, req.file, req.organization.organization_id);
 
-        // TODO: Enviar imagem para o Cloudinary, salvar o caminho da imagem no banco e garantir o rollback caso algo dê errado
-
-
-        const imagePath = null;
-        const pet = await petService.uploadImage(petId, imagePath, req.organization.organization_id);
         if (pet) {
             res.send(pet);
         } else {

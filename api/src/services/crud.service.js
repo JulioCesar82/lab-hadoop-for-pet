@@ -116,8 +116,9 @@ const remove = (tableName, idField) => async (id, organizationId) => {
     const { query: filteredQuery, params: finalParams } = applyOrganizationFilter(query, params, tableName, organizationId);
     
     const result = await pool.query(filteredQuery, finalParams);
-return result.rows[0];
+    return result.rows[0];
 };
+
 const createWithList = (tableName, fields) => async (items, organizationId) => {
     const client = await pool.connect();
     try {
