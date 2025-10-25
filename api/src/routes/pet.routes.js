@@ -55,8 +55,7 @@ const { authenticateApiKey } = require('../middleware/auth');
 router.use(authenticateApiKey);
 const petController = require('../controllers/pet.controller');
 const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = require('../config/upload-multipart-form-data');
 
 // POST (Creates list of pets with given input array): /pet/createWithList
 /**
