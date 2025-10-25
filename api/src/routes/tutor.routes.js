@@ -187,8 +187,6 @@ router.delete('/:id', tutorController.remove);
  */
 router.post('/notify-all', tutorController.notifyAllTutors);
 
-// TODO: Add list operations and other specific logic if needed
-
 /**
  * @swagger
  * /tutor/{id}/booking-recommendations:
