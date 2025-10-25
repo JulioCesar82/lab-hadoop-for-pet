@@ -1,8 +1,9 @@
 const express = require('express');
 require('dotenv').config();
 
+const { apiPort } = require('./config/general');
+
 const app = express();
-const port = process.env.API_PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,7 +20,7 @@ app.use('/api', routes);
 
 const createDDL = require('./config/ddl');
 
-app.listen(port, async () => {
+app.listen(apiPort, async () => {
   await createDDL();
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${apiPort}`);
 });
