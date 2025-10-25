@@ -7,7 +7,7 @@ const options = {
     info: {
       title: 'Petshop API',
       version: '1.0.0',
-      description: 'API para o laboratório de Hadoop com um petshop.',
+      description: 'API para o laboratório de Hadoop com um petshop. Antes de mais nada, é necessário criar uma organização através do convite fornecido previamente, após a criação da organização você receberá uma chave de API (ApiKey) para autenticar suas solicitações. O acesso à API é protegido pela chave de API (ApiKey), garantindo que apenas usuários autorizados possam interagir com os recursos do sistema.',
     },
     servers: [
       {
@@ -19,6 +19,18 @@ const options = {
         description: 'Servidor de Produção - v1',
       },
     ],
+    components: {
+      securitySchemes: {
+        ApiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-api-key'
+        }
+      }
+    },
+    security: [{
+      ApiKeyAuth: []
+    }]
   },
   apis: ['./src/routes/*.js'], // Caminho para os arquivos que contêm as anotações da API
 };

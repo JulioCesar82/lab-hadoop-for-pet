@@ -36,7 +36,7 @@ const express = require('express');
  *       example:
  *         name: "Bolinha"
  *         species: "Cachorro"
- *         animal_type: "SRD"
+ *         animal_type: "Pug"
  *         fur_type: "Curto"
  *         birth_date: "2022-01-15"
  *         tutor_id: 1

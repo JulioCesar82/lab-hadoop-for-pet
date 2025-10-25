@@ -38,10 +38,21 @@ const updateRecommendation = async (req, res) => {
     }
 };
 
+const notifyAllTutors = async (req, res) => {
+    try {
+        // A notificação é um processo assíncrono que pode demorar.
+        // Respondemos imediatamente e deixamos o processo rodando em background.
+        tutorService.notifyAllTutors();
+        res.status(202).send({ message: "Processo de notificação para todos os tutores foi iniciado." });
+    } catch (error) {
+        res.status(500).send({ message: `Falha ao iniciar o processo de notificação: ${error.message}` });
+    }
+};
 
 module.exports = {
     ...tutorCrudController,
     getBookingRecommendations,
     getVaccineRecommendations,
     updateRecommendation,
+    notifyAllTutors,
 };
