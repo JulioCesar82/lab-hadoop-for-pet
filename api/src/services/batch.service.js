@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 const { exec } = require('child_process');
 
 const startJob = async (jobName, command) => {
