@@ -2,6 +2,7 @@ const batchService = require('../services/batch.service');
 
 exports.startVaccineRecommendationJob = async (req, res) => {
     try {
+        // TODO: Preciso executar os passos obrigatório para o preenchimento da tabela 'vaccine_recommendation' conforme o 'lab4-pipeline-vacinacao-predicao.ipynb'
         const command = 'echo "Starting vaccine recommendation job..."'; // Placeholder
         const result = await batchService.startJob('vaccine_recommendation', command);
         res.send(result);
@@ -30,6 +31,7 @@ exports.getVaccineRecommendationJobResult = async (req, res) => {
 
 exports.startBookingReferenceJob = async (req, res) => {
     try {
+        // TODO: Preciso executar os passos obrigatório para o preenchimento da tabela 'booking_reference' conforme o 'lab2.1-pipeline-banho-e-tosa-referencia.ipynb'
         const command = 'echo "Starting booking reference job..."'; // Placeholder
         const result = await batchService.startJob('booking_reference', command);
         res.send(result);
@@ -58,6 +60,7 @@ exports.getBookingReferenceJobResult = async (req, res) => {
 
 exports.startBookingRecommendationJob = async (req, res) => {
     try {
+        // TODO: Preciso executar os passos obrigatório para o preenchimento da tabela 'booking_recommendation' conforme o 'lab2.2-pipeline-banho-e-tosa-predicao.ipynb'
         const command = 'echo "Starting booking recommendation job..."'; // Placeholder
         const result = await batchService.startJob('booking_recommendation', command);
         res.send(result);
@@ -86,6 +89,7 @@ exports.getBookingRecommendationJobResult = async (req, res) => {
 
 exports.startLtvByPetProfileJob = async (req, res) => {
     try {
+        // TODO: Preciso executar os passos obrigatório para o preenchimento da tabela 'ltv_by_pet_profile' conforme o 'lab3-pipeline-valor-por-perfil.ipynb'
         const command = 'echo "Starting LTV by pet profile job..."'; // Placeholder
         const result = await batchService.startJob('ltv_by_pet_profile', command);
         res.send(result);
