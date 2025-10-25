@@ -46,12 +46,12 @@ const getJobStatus = async (jobName) => {
 };
 
 const getJobResult = async (tableName) => {
-    const result = await pool.query(`SELECT * FROM ${tableName}`);
+    const result = await pool.query(`SELECT * FROM ${tableName} WHERE nenabled = TRUE`);
     return result.rows;
 };
 
 const getLTVByPetProfile = async () => {
-    const result = await pool.query('SELECT pet_profile, ltv FROM ltv_by_pet_profile');
+    const result = await pool.query('SELECT species, animal_type, fur_type, total_value FROM ltv_by_pet_profile WHERE nenabled = TRUE');
     return result.rows;
     };
 

@@ -164,6 +164,27 @@ router.put('/:id', validateTutor, tutorController.update);
  */
 router.delete('/:id', tutorController.remove);
 
+/**
+ * @swagger
+ * /tutor/notify-all:
+ *   post:
+ *     summary: Notifica todos os tutores sobre as recomendações pendentes de seus pets
+ *     tags: [Tutors]
+ *     description: Inicia um processo em background para enviar notificações (Email, SMS, Push) para todos os tutores que possuem recomendações ativas para seus pets.
+ *     responses:
+ *       202:
+ *         description: Processo de notificação iniciado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Processo de notificação para todos os tutores foi iniciado."
+ */
+router.post('/notify-all', tutorController.notifyAllTutors);
+
 // TODO: Add list operations and other specific logic if needed
 
 /**
