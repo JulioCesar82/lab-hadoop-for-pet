@@ -61,7 +61,7 @@ const find = (tableName) => async (filters, organizationId) => {
     
     const filterKeys = Object.keys(filters);
     if (filterKeys.length > 0) {
-        const whereClauses = filterKeys.map((key, i) => `${key} = $${i + 1}`);
+        const whereClauses = filterKeys.map((key, i) => `${tableName}.${key} = $${i + 1}`);
         query += ` WHERE ${whereClauses.join(' AND ')}`;
         
         params.push(...Object.values(filters));
