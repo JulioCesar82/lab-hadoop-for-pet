@@ -15,7 +15,10 @@ const authenticateApiKey = async (req, res, next) => {
 
         if (organization.links && organization.links.length > 0) {
             const referer = req.headers.referer || req.headers.origin;
-            if (!referer || !organization.links.some(link => referer.startsWith(link))) {
+            const currentHost = req.headers.host;
+            
+            // Permite requisições do Swagger UI hospedado ou dos links autorizados
+            if (!referer || (!referer.includes(currentHost) && !organization.links.some(link => referer.startsWith(link)))) {
                 console.error('Referer check failed:',  req.headers);
                 return res.status(statusCodes.FORBIDDEN).json({ message: 'Referer not allowed.' });
             }
