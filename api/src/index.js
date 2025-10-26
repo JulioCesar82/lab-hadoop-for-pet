@@ -18,9 +18,14 @@ app.get('/', (req, res) => {
 const routes = require('./routes');
 app.use('/api', routes);
 
-const createDDL = require('./config/ddl');
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
+
+const createDDL = require('./config/database/ddl');
+const insertDML = require('./config/database/dml');
 
 app.listen(apiPort, async () => {
   await createDDL();
+  await insertDML();
   console.log(`Server is running on port ${apiPort}`);
 });

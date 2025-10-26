@@ -1,5 +1,7 @@
 const batchRepository = require('../repositories/postgres/batch.repository');
 const batchService = require('../services/batch.service');
+const catchAsync = require('../utils/catchAsync');
+const { statusCodes } = require('../config/general');
 
 const entityScriptMapping = {
     'vaccine-recommendation': 'run_vaccine_pipeline.sh',
@@ -8,52 +10,36 @@ const entityScriptMapping = {
     'ltv-by-pet-profile': 'run_ltv_by_pet_profile_pipeline.sh',
 };
 
-exports.startJob = async (req, res) => {
-    try {
-        const { entity } = req.params;
-        const script = entityScriptMapping[entity];
+exports.startJob = catchAsync(async (req, res) => {
+    const { entity } = req.params;
+    const script = entityScriptMapping[entity];
 
-        if (!script) {
-            return res.status(400).send({ message: 'Invalid entity.' });
-        }
+    if (!script) {
+        return res.status(statusCodes.BAD_REQUEST).send({ message: 'Invalid entity.' });
+    }
 
-        const command = `bash ${resourcesPath}/${script} ${dbConfig.user} ${dbConfig.host} ${dbConfig.database} ${dbConfig.password} ${dbConfig.port}`;
-        const result = await batchService.startJob(entity, command);
+    const command = `bash ${resourcesPath}/${script} ${dbConfig.user} ${dbConfig.host} ${dbConfig.database} ${dbConfig.password} ${dbConfig.port}`;
+    const result = await batchService.startJob(entity, command);
+
+    res.status(statusCodes.OK).send(result);
+});
+
+exports.getJobStatus = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await batchRepository.getJobStatus(id);
    
-        res.send(result);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+    res.status(statusCodes.OK).send(result);
+});
 
-exports.getJobStatus = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await batchRepository.getJobStatus(id);
-       
-        res.send(result);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+exports.getJobResult = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await batchRepository.getJobResult(id);
+   
+    res.status(statusCodes.OK).send(result);
+});
 
-exports.getJobResult = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await batchRepository.getJobResult(id);
-       
-        res.send(result);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
-
-exports.getLTVByPetProfile = async (req, res) => {
-    try {
-        const result = await batchRepository.getLTVByPetProfile();
-      
-        res.send(result);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+exports.getLTVByPetProfile = catchAsync(async (req, res) => {
+    const result = await batchRepository.getLTVByPetProfile();
+  
+    res.status(statusCodes.OK).send(result);
+});

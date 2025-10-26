@@ -24,6 +24,10 @@ router.use(authenticateApiKey);
  *         name: entity
  *         schema:
  *           type: string
+ *           enum: 
+ *             - vaccine-recommendation
+ *             - booking-reference
+ *             - booking-recommendation, ltv-by-pet-profile.
  *         required: true
  *         description: The entity to process
  *     responses:

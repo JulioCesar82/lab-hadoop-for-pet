@@ -1,15 +1,15 @@
 const crudRepository = require('./crud.repository');
-const petService = require('./pet.repository');
+const petRepository = require('./pet.repository');
 
 const tutorFields = ['name', 'email', 'phone'];
 const tutorCrudRepository = crudRepository('tutor', 'tutor_id', tutorFields);
 
 const getBookingRecommendations = async (tutorId, organizationId) => {
-    const pets = await petService.find({ tutor_id: tutorId }, organizationId);
+    const pets = await petRepository.find({ tutor_id: tutorId }, organizationId);
     const recommendations = [];
 
     for (const pet of pets) {
-        const petRecommendations = await petService.getBookingRecommendations(pet.pet_id, organizationId);
+        const petRecommendations = await petRepository.getBookingRecommendations(pet.pet_id, organizationId);
         recommendations.push(...petRecommendations);
     }
 
@@ -17,11 +17,11 @@ const getBookingRecommendations = async (tutorId, organizationId) => {
 };
 
 const getVaccineRecommendations = async (tutorId, organizationId) => {
-    const pets = await petService.find({ tutor_id: tutorId }, organizationId);
+    const pets = await petRepository.find({ tutor_id: tutorId }, organizationId);
     const recommendations = [];
 
     for (const pet of pets) {
-        const petRecommendations = await petService.getVaccineRecommendations(pet.pet_id, organizationId);
+        const petRecommendations = await petRepository.getVaccineRecommendations(pet.pet_id, organizationId);
         recommendations.push(...petRecommendations);
     }
 
@@ -29,7 +29,7 @@ const getVaccineRecommendations = async (tutorId, organizationId) => {
 };
 
 const updateRecommendation = async (tutorId, ignore, organizationId) => {
-    const pets = await petService.find({ tutor_id: tutorId }, organizationId);
+    const pets = await petRepository.find({ tutor_id: tutorId }, organizationId);
 
     if (!pets || pets.length === 0) {
         return null;
@@ -37,7 +37,7 @@ const updateRecommendation = async (tutorId, ignore, organizationId) => {
 
     const updatedPets = [];
     for (const pet of pets) {
-        const updatedPet = await petService.updateRecommendation(pet.pet_id, ignore, organizationId);
+        const updatedPet = await petRepository.updateRecommendation(pet.pet_id, ignore, organizationId);
         updatedPets.push(updatedPet);
     }
     

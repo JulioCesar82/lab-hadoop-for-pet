@@ -1,25 +1,24 @@
 const crypto = require('crypto');
+const crudRepository = require('./crud.repository');
 
-const pool = require('../../config/database');
+const apiKeyFields = ['organization_id', 'api_key'];
+const apiKeyCrudRepository = crudRepository('organization_apikey', 'api_key', apiKeyFields);
 
 const createApiKey = async (organizationId) => {
     const apiKey = crypto.randomBytes(32).toString('hex');
-    const result = await pool.query(
-        'INSERT INTO organization_apikey (organization_id, api_key) VALUES ($1, $2) RETURNING *',
-        [organizationId, apiKey]
-    );
-
-    return result.rows[0];
+    return await apiKeyCrudRepository.create({ organization_id: organizationId, api_key: apiKey });
 };
 
 const getApiKeysByOrganizationId = async (organizationId) => {
-    const result = await pool.query('SELECT * FROM organization_apikey WHERE organization_id = $1 AND nenabled = TRUE', [organizationId]);
-   
-    return result.rows;
+    return await apiKeyCrudRepository.find({ organization_id: organizationId, nenabled: true });
 };
 
 const deleteApiKey = async (organizationId, apiKey) => {
-    const result = await pool.query(
+    const { pool } = require('../../config/database');
+
+    const client = await pool.connect();
+
+    const result = await client.query(
         'UPDATE organization_apikey SET nenabled = FALSE WHERE organization_id = $1 AND api_key = $2 RETURNING *',
         [organizationId, apiKey]
     );
@@ -28,9 +27,8 @@ const deleteApiKey = async (organizationId, apiKey) => {
 };
 
 const getOrganizationByApiKey = async (apiKey) => {
-    const result = await pool.query('SELECT organization_id FROM organization_apikey WHERE api_key = $1 AND nenabled = TRUE', [apiKey]);
-  
-    return result.rows[0];
+    const results = await apiKeyCrudRepository.find({ api_key: apiKey, nenabled: true });
+    return results[0];
 };
 
 module.exports = {
