@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const apiKeyController = require('../controllers/apiKey.controller');
 const { deleteApiKeyValidator } = require('../validators/apiKey.validator');
 const { authenticateApiKey } = require('../middleware/auth');

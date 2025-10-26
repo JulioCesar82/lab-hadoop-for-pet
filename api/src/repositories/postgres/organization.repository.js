@@ -1,5 +1,6 @@
-const pool = require('../../config/database');
 const crypto = require('crypto');
+
+const pool = require('../../config/database');
 
 const createOrganization = async (organizationData, inviteCode) => {
     const client = await pool.connect();
@@ -46,6 +47,7 @@ const createOrganization = async (organizationData, inviteCode) => {
 
 const getOrganizationById = async (id) => {
     const result = await pool.query('SELECT * FROM organization WHERE organization_id = $1 AND nenabled = TRUE', [id]);
+    
     return result.rows[0];
 };
 
@@ -54,6 +56,7 @@ const getOrganizationByApiKey = async (apiKey) => {
         'SELECT o.* FROM organization o JOIN organization_apikey oa ON o.organization_id = oa.organization_id WHERE oa.api_key = $1 AND o.nenabled = TRUE AND oa.nenabled = TRUE',
         [apiKey]
     );
+
     return result.rows[0];
 };
 
@@ -62,6 +65,7 @@ const disableOrganization = async (id) => {
         'UPDATE organization SET nenabled = FALSE WHERE organization_id = $1 AND nenabled = TRUE RETURNING *',
         [id]
     );
+
     return result.rows[0];
 };
 

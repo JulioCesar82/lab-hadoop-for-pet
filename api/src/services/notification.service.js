@@ -1,7 +1,8 @@
-const emailProvider = require('../providers/email');
-const { templatePath: emailTemplatePath, subject: emailSubject } = require('../config/email');
 const fs = require('fs');
 const path = require('path');
+
+const emailProvider = require('../providers/email');
+const { templatePath: emailTemplatePath, subject: emailSubject } = require('../config/email');
 
 const sendEmail = async (tutor, recommendations) => {
     try {
@@ -21,7 +22,7 @@ const sendEmail = async (tutor, recommendations) => {
 
         console.log(`[EMAIL] E-mail de recomendação enviado para ${tutor.email}`);
     } catch (error) {
-        console.error(`[EMAIL] Erro ao enviar e-mail para ${tutor.email}:`, error);
+        throw new Error(`[EMAIL] Erro ao enviar e-mail para ${tutor.email}:`, error);
     }
 };
 

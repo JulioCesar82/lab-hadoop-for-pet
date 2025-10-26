@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const organizationController = require('../controllers/organization.controller');
 const { createOrganizationValidator } = require('../validators/organization.validator');
 const { authenticateApiKey } = require('../middleware/auth');
