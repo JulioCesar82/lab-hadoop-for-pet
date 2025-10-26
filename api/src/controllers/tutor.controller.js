@@ -1,47 +1,50 @@
-const createCrudController = require('./crud.controller');
+const crudController = require('./crud.controller');
+const tutorRepository = require('../repositories/postgres/tutor.repository');
 const tutorService = require('../services/tutor.service');
+const catchAsync = require('../utils/catchAsync');
+const { statusCodes } = require('../config/general');
 
-const tutorCrudController = createCrudController(tutorService);
+const tutorCrudController = crudController(tutorRepository);
 
-const getBookingRecommendations = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const recommendations = await tutorService.getBookingRecommendations(id);
-        res.send(recommendations);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
+const getBookingRecommendations = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const recommendations = await tutorRepository.getBookingRecommendations(id, req.organization_id);
+
+    res.status(statusCodes.OK).send(recommendations);
+});
+
+const getVaccineRecommendations = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const recommendations = await tutorRepository.getVaccineRecommendations(id, req.organization_id);
+
+    res.status(statusCodes.OK).send(recommendations);
+});
+
+const updateRecommendation = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const { ignore } = req.body;
+
+    const result = await tutorRepository.updateRecommendation(id, ignore, req.organization_id);
+
+    if (result) {
+        res.status(statusCodes.OK).send(result);
+    } else {
+        res.status(statusCodes.NOT_FOUND).send({ message: 'Tutor not found or no pets to update.' });
     }
-};
+});
 
-const getVaccineRecommendations = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const recommendations = await tutorService.getVaccineRecommendations(id);
-        res.send(recommendations);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+const notifyAllTutors = catchAsync(async (req, res) => {
+    // A notificação é um processo assíncrono que pode demorar.
+    // Respondemos imediatamente e deixamos o processo rodando em background.
+    tutorService.notifyAllTutors(req.organization_id);
 
-const updateRecommendation = async (req, res) => {
-    try {
-        const { id: tutorId } = req.params;
-        const { ignore } = req.body;
-        const result = await tutorService.updateRecommendation(tutorId, ignore);
-        if (result) {
-            res.send(result);
-        } else {
-            res.status(404).send({ message: 'Tutor not found or no pets to update.' });
-        }
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
-
+    res.status(statusCodes.ACCEPTED).send({ message: "Processo de notificação para todos os tutores foi iniciado." });
+});
 
 module.exports = {
     ...tutorCrudController,
     getBookingRecommendations,
     getVaccineRecommendations,
     updateRecommendation,
+    notifyAllTutors,
 };

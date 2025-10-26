@@ -28,6 +28,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: resources/docker/image/Dockerfile
+        file: resources/docker/image/Dockerfile-jupter
         push: true
         tags: ghcr.io/${{ github.repository }}:latest

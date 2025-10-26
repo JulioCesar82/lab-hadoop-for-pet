@@ -1,8 +1,9 @@
 const express = require('express');
 require('dotenv').config();
 
+const { apiPort } = require('./config/general');
+
 const app = express();
-const port = process.env.API_PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,6 +18,14 @@ app.get('/', (req, res) => {
 const routes = require('./routes');
 app.use('/api', routes);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
+
+const createDDL = require('./config/database/ddl');
+const insertDML = require('./config/database/dml');
+
+app.listen(apiPort, async () => {
+  await createDDL();
+  await insertDML();
+  console.log(`Server is running on port ${apiPort}`);
 });

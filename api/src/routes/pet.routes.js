@@ -36,7 +36,7 @@ const express = require('express');
  *       example:
  *         name: "Bolinha"
  *         species: "Cachorro"
- *         animal_type: "SRD"
+ *         animal_type: "Pug"
  *         fur_type: "Curto"
  *         birth_date: "2022-01-15"
  *         tutor_id: 1
@@ -50,10 +50,12 @@ const express = require('express');
  */
 
 const router = express.Router();
+const { authenticateApiKey } = require('../middleware/auth');
+
+router.use(authenticateApiKey);
 const petController = require('../controllers/pet.controller');
 const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = require('../config/upload-multipart-form-data');
 
 // POST (Creates list of pets with given input array): /pet/createWithList
 /**
@@ -103,16 +105,16 @@ router.post('/createWithList', validatePetList, petController.createWithList);
  */
 router.post('/', validatePet, petController.create);
 
-// PUT (uploads an image): /pet/{petId}/uploadImage
+// PUT (uploads an image): /pet/{id}/uploadImage
 /**
  * @swagger
- * /pet/{petId}/uploadImage:
+ * /pet/{id}/uploadImage:
  *   put:
  *     summary: Uploads an image to a pet
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -134,18 +136,18 @@ router.post('/', validatePet, petController.create);
  *       500:
  *         description: Some server error
  */
-router.put('/:petId/uploadImage', upload.single('image'), petController.uploadImage);
+router.put('/:id/uploadImage', upload.single('image'), petController.uploadImage);
 
-// PUT (Update an existing pet): /pet/{petId}
+// PUT (Update an existing pet): /pet/{id}
 /**
  * @swagger
- * /pet/{petId}:
+ * /pet/{id}:
  *   put:
  *     summary: Update an existing pet
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -168,7 +170,7 @@ router.put('/:petId/uploadImage', upload.single('image'), petController.uploadIm
  *       500:
  *         description: Some server error
  */
-router.put('/:petId', validatePet, petController.update);
+router.put('/:id', validatePet, petController.update);
 
 // PUT (Updates list of pets with given input array): /pet/updateWithList
 /**
@@ -193,16 +195,16 @@ router.put('/:petId', validatePet, petController.update);
  */
 router.put('/updateWithList', validatePetList, petController.updateWithList);
 
-// DELETE (Delete an pet): /pet/{petId}
+// DELETE (Delete an pet): /pet/{id}
 /**
  * @swagger
- * /pet/{petId}:
+ * /pet/{id}:
  *   delete:
  *     summary: Deletes a pet by ID
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -215,7 +217,7 @@ router.put('/updateWithList', validatePetList, petController.updateWithList);
  *       500:
  *         description: Some server error
  */
-router.delete('/:petId', petController.remove);
+router.delete('/:id', petController.remove);
 
 // DELETE (Deletes list of pets with given input array): /pet/deleteWithList
 /**
@@ -245,16 +247,16 @@ router.delete('/:petId', petController.remove);
  */
 router.delete('/deleteWithList', validateDeletePetList, petController.deleteWithList);
 
-// GET (Finds Pets by id): /pet?id={petId}
+// GET (Finds Pets by id): /pet?id={id}
 /**
  * @swagger
- * /pet/{petId}:
+ * /pet/{id}:
  *   get:
  *     summary: Get a pet by ID
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -269,7 +271,7 @@ router.delete('/deleteWithList', validateDeletePetList, petController.deleteWith
  *       404:
  *         description: The pet was not found
  */
-router.get('/:petId', petController.getById);
+router.get('/:id', petController.getById);
 
 // GET (Finds Pets by species, animal_type or fur_type): /pet?type={type}&animal_type={animal_type}&fur_type={fur_type}
 /**
@@ -309,16 +311,16 @@ router.get('/:petId', petController.getById);
 router.get('/', petController.findPetsByCriteria);
 
 
-// PUT (Ignore all recommendations for a pet): /pet/{petId}/recommendations/ignore-all
+// PUT (Ignore all recommendations for a pet): /pet/{id}/recommendations/ignore-all
 /**
  * @swagger
- * /pet/{petId}/recommendations/ignore-all:
+ * /pet/{id}/recommendations/ignore-all:
  *   put:
  *     summary: Ignore all recommendations for a pet
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -331,18 +333,18 @@ router.get('/', petController.findPetsByCriteria);
  *       500:
  *         description: Some server error
  */
-router.put('/:petId/recommendations/ignore-all', petController.updateRecommendation);
+router.put('/:id/recommendations/ignore-all', petController.updateRecommendation);
 
-// GET (Finds booking recommendations by petId): /pet/{petId}/recommendations/booking
+// GET (Finds booking recommendations by id): /pet/{id}/recommendations/booking
 /**
  * @swagger
- * /pet/{petId}/recommendations/booking:
+ * /pet/{id}/recommendations/booking:
  *   get:
- *     summary: Finds booking recommendations by petId
+ *     summary: Finds booking recommendations by id
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -355,18 +357,18 @@ router.put('/:petId/recommendations/ignore-all', petController.updateRecommendat
  *       500:
  *         description: Some server error
  */
-router.get('/:petId/recommendations/booking', petController.getBookingRecommendations);
+router.get('/:id/recommendations/booking', petController.getBookingRecommendations);
 
-// GET (Finds vaccine recommendations by petId): /pet/{petId}/recommendations/vaccine
+// GET (Finds vaccine recommendations by id): /pet/{id}/recommendations/vaccine
 /**
  * @swagger
- * /pet/{petId}/recommendations/vaccine:
+ * /pet/{id}/recommendations/vaccine:
  *   get:
- *     summary: Finds vaccine recommendations by petId
+ *     summary: Finds vaccine recommendations by id
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -379,18 +381,18 @@ router.get('/:petId/recommendations/booking', petController.getBookingRecommenda
  *       500:
  *         description: Some server error
  */
-router.get('/:petId/recommendations/vaccine', petController.getVaccineRecommendations);
+router.get('/:id/recommendations/vaccine', petController.getVaccineRecommendations);
 
-// DELETE (Disables a booking recommendation for a pet): /pet/{petId}/recommendations/booking
+// DELETE (Disables a booking recommendation for a pet): /pet/{id}/recommendations/booking
 /**
  * @swagger
- * /pet/{petId}/recommendations/booking:
+ * /pet/{id}/recommendations/booking:
  *   delete:
  *     summary: Disables a booking recommendation for a pet
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -403,18 +405,18 @@ router.get('/:petId/recommendations/vaccine', petController.getVaccineRecommenda
  *       500:
  *         description: Some server error
  */
-router.delete('/:petId/recommendations/booking', petController.disableBookingRecommendation);
+router.delete('/:id/recommendations/booking', petController.disableBookingRecommendation);
 
-// DELETE (Disables a specific vaccine recommendation for a pet): /pet/{petId}/recommendations/vaccine/{vaccineName}
+// DELETE (Disables a specific vaccine recommendation for a pet): /pet/{id}/recommendations/vaccine/{vaccineName}
 /**
  * @swagger
- * /pet/{petId}/recommendations/vaccine/{vaccineName}:
+ * /pet/{id}/recommendations/vaccine/{vaccineName}:
  *   delete:
  *     summary: Disables a specific vaccine recommendation for a pet
  *     tags: [Pets]
  *     parameters:
  *       - in: path
- *         name: petId
+ *         name: id
  *         schema:
  *           type: integer
  *         required: true
@@ -433,7 +435,7 @@ router.delete('/:petId/recommendations/booking', petController.disableBookingRec
  *       500:
  *         description: Some server error
  */
-router.delete('/:petId/recommendations/vaccine/:vaccineName', petController.disableVaccineRecommendation);
+router.delete('/:id/recommendations/vaccine/:vaccineName', petController.disableVaccineRecommendation);
 
 
 module.exports = router;

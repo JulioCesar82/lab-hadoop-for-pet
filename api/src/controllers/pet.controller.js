@@ -1,88 +1,70 @@
-const createCrudController = require('./crud.controller');
+const crudController = require('./crud.controller');
+const petRepository = require('../repositories/postgres/pet.repository');
 const petService = require('../services/pet.service');
+const catchAsync = require('../utils/catchAsync');
+const { statusCodes } = require('../config/general');
 
-const petCrudController = createCrudController(petService);
+const petCrudController = crudController(petRepository);
 
-const findPetsByCriteria = async (req, res) => {
+const findPetsByCriteria = catchAsync(async (req, res) => {
     if (req.query.id) {
         return petCrudController.getById(req, res);
     }
-    try {
-        const pets = await petService.findPetsByCriteria(req.query);
-        res.send(pets);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
 
-const uploadImage = async (req, res) => {
-    try {
-        const petId = req.params.petId;
-        const imagePath = req.file.path;
-        const pet = await petService.uploadImage(petId, imagePath);
-        if (pet) {
-            res.send(pet);
-        } else {
-            res.status(404).send({ message: 'Pet not found' });
-        }
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+    const pets = await petRepository.findPetsByCriteria(req.query, req.organization_id);
 
-const updateRecommendation = async (req, res) => {
-    try {
-        const { petId, ignore } = req.body;
-        const pet = await petService.updateRecommendation(petId, ignore);
-        if (pet) {
-            res.send(pet);
-        } else {
-            res.status(404).send({ message: 'Pet not found' });
-        }
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+    res.status(statusCodes.OK).send(pets);
+});
 
-const getBookingRecommendations = async (req, res) => {
-    try {
-        const { petId } = req.params;
-        const recommendations = await petService.getBookingRecommendations(petId);
-        res.send(recommendations);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+const uploadImage = catchAsync(async (req, res) => {
+    const id = req.params.id;
+    const pet = await petService.uploadImage(id, req.file, req.organization_id);
 
-const getVaccineRecommendations = async (req, res) => {
-    try {
-        const { petId } = req.params;
-        const recommendations = await petService.getVaccineRecommendations(petId);
-        res.send(recommendations);
-    } catch (error) {
-        res.status(400).send({ message: error.message });
+    if (pet) {
+        res.status(statusCodes.OK).send(pet);
+    } else {
+        res.status(statusCodes.NOT_FOUND).send({ message: 'Pet not found' });
     }
-};
+});
 
-const disableBookingRecommendation = async (req, res) => {
-    try {
-        const { petId } = req.params;
-        await petService.disableBookingRecommendation(petId);
-        res.status(204).send();
-    } catch (error) {
-        res.status(400).send({ message: error.message });
-    }
-};
+const updateRecommendation = catchAsync(async (req, res) => {
+    const { id, ignore } = req.body;
+    const pet = await petRepository.updateRecommendation(id, ignore, req.organization_id);
 
-const disableVaccineRecommendation = async (req, res) => {
-    try {
-        const { petId, vaccineName } = req.params;
-        await petService.disableVaccineRecommendation(petId, vaccineName);
-        res.status(204).send();
-    } catch (error) {
-        res.status(400).send({ message: error.message });
+    if (pet) {
+        res.status(statusCodes.OK).send(pet);
+    } else {
+        res.status(statusCodes.NOT_FOUND).send({ message: 'Pet not found' });
     }
-};
+});
+
+const getBookingRecommendations = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const recommendations = await petRepository.getBookingRecommendations(id, req.organization_id);
+
+    res.status(statusCodes.OK).send(recommendations);
+});
+
+const getVaccineRecommendations = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const recommendations = await petRepository.getVaccineRecommendations(id, req.organization_id);
+
+    res.status(statusCodes.OK).send(recommendations);
+});
+
+const disableBookingRecommendation = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    await petRepository.disableBookingRecommendation(id, req.organization_id);
+
+    res.status(statusCodes.NO_CONTENT).send();
+});
+
+const disableVaccineRecommendation = catchAsync(async (req, res) => {
+    const { id, vaccineName } = req.params;
+    await petRepository.disableVaccineRecommendation(id, vaccineName, req.organization_id);
+
+    res.status(statusCodes.NO_CONTENT).send();
+});
 
 module.exports = {
     ...petCrudController,
