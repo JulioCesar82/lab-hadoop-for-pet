@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+
 const { host, port, secure, user, pass, from } = require('../../config/email');
 
 let transporter;
@@ -8,6 +9,7 @@ function getTransporter() {
         if (!host || !port || !user || !pass) {
             throw new Error('Nodemailer environment variables are not configured');
         }
+
         transporter = nodemailer.createTransport({
             host,
             port,
@@ -18,6 +20,7 @@ function getTransporter() {
             }
         });
     }
+    
     return transporter;
 }
 

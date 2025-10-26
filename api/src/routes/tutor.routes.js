@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateApiKey } = require('../middleware/auth');
-router.use(authenticateApiKey);
+
 const tutorController = require('../controllers/tutor.controller');
 const { validateTutor } = require('../validators/tutor.validator');
+const { authenticateApiKey } = require('../middleware/auth');
+router.use(authenticateApiKey);
 
 /**
  * @swagger

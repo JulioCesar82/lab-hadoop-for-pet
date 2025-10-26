@@ -1,4 +1,4 @@
-const organizationService = require('../services/organization.service');
+const organizationRepository = require('../repositories/postgres/organization.repository');
 
 const authenticateApiKey = async (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
@@ -7,7 +7,7 @@ const authenticateApiKey = async (req, res, next) => {
     }
 
     try {
-        const organization = await organizationService.getOrganizationByApiKey(apiKey);
+        const organization = await organizationRepository.getOrganizationByApiKey(apiKey);
         if (!organization) {
             return res.status(403).json({ message: 'Invalid API Key.' });
         }
@@ -20,6 +20,7 @@ const authenticateApiKey = async (req, res, next) => {
         }
 
         req.organization_id = organization.organization_id;
+        
         next();
     } catch (error) {
         res.status(500).json({ message: error.message });

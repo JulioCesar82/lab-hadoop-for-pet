@@ -84,6 +84,7 @@ const create = (tableName, fields) => async (data, organizationId) => {
         if (!allFields.includes('organization_id')) {
             allFields.push('organization_id');
         }
+
         dataWithOrg.organization_id = organizationId;
     }
 
@@ -93,6 +94,7 @@ const create = (tableName, fields) => async (data, organizationId) => {
 
     const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
     const result = await pool.query(query, values);
+
     return result.rows[0];
 };
 
@@ -106,6 +108,7 @@ const update = (tableName, idField, fields) => async (id, data, organizationId) 
     const { query: filteredQuery, params: finalParams } = applyOrganizationFilter(query, params, tableName, organizationId);
     
     const result = await pool.query(filteredQuery, finalParams);
+
     return result.rows[0];
 };
 
@@ -116,6 +119,7 @@ const remove = (tableName, idField) => async (id, organizationId) => {
     const { query: filteredQuery, params: finalParams } = applyOrganizationFilter(query, params, tableName, organizationId);
     
     const result = await pool.query(filteredQuery, finalParams);
+
     return result.rows[0];
 };
 
@@ -131,6 +135,7 @@ const createWithList = (tableName, fields) => async (items, organizationId) => {
         }
 
         await client.query('COMMIT');
+
         return createdItems;
     } catch (error) {
         await client.query('ROLLBACK');
@@ -152,6 +157,7 @@ const updateWithList = (tableName, idField, fields) => async (items, organizatio
         }
 
         await client.query('COMMIT');
+
         return updatedItems;
     } catch (error) {
         await client.query('ROLLBACK');
@@ -173,6 +179,7 @@ const deleteWithList = (tableName, idField) => async (ids, organizationId) => {
         }
 
         await client.query('COMMIT');
+        
         return deletedItems;
     } catch (error) {
         await client.query('ROLLBACK');
