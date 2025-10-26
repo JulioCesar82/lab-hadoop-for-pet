@@ -15,7 +15,7 @@ const options = {
         description: 'Servidor de desenvolvimento - v1',
       },
       {
-        url: 'https://julio471-inf332-hackaton.hf.space/api/v1',
+        url: 'https://julio471-inf332-hackaton-petshop.hf.space/api/v1',
         description: 'Servidor de Produção - v1',
       },
     ],
