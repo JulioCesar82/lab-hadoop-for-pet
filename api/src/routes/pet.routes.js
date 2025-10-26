@@ -36,7 +36,7 @@ const express = require('express');
  *       example:
  *         name: "Bolinha"
  *         species: "Cachorro"
- *         animal_type: "SRD"
+ *         animal_type: "Pug"
  *         fur_type: "Curto"
  *         birth_date: "2022-01-15"
  *         tutor_id: 1
@@ -50,10 +50,12 @@ const express = require('express');
  */
 
 const router = express.Router();
+const { authenticateApiKey } = require('../middleware/auth');
+
+router.use(authenticateApiKey);
 const petController = require('../controllers/pet.controller');
 const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = require('../config/upload-multipart-form-data');
 
 // POST (Creates list of pets with given input array): /pet/createWithList
 /**

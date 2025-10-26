@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+
 const tutorController = require('../controllers/tutor.controller');
 const { validateTutor } = require('../validators/tutor.validator');
+const { authenticateApiKey } = require('../middleware/auth');
+router.use(authenticateApiKey);
 
 /**
  * @swagger
@@ -164,7 +167,26 @@ router.put('/:id', validateTutor, tutorController.update);
  */
 router.delete('/:id', tutorController.remove);
 
-// TODO: Add list operations and other specific logic if needed
+/**
+ * @swagger
+ * /tutor/notify-all:
+ *   post:
+ *     summary: Notifica todos os tutores sobre as recomendações pendentes de seus pets
+ *     tags: [Tutors]
+ *     description: Inicia um processo em background para enviar notificações (Email, SMS, Push) para todos os tutores que possuem recomendações ativas para seus pets.
+ *     responses:
+ *       202:
+ *         description: Processo de notificação iniciado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Processo de notificação para todos os tutores foi iniciado."
+ */
+router.post('/notify-all', tutorController.notifyAllTutors);
 
 /**
  * @swagger

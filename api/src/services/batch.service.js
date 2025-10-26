@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 const { exec } = require('child_process');
 
 const startJob = async (jobName, command) => {
@@ -37,27 +37,6 @@ const startJob = async (jobName, command) => {
     return result.rows[0];
 };
 
-const getJobStatus = async (jobName) => {
-    const result = await pool.query(
-        'SELECT * FROM execution_history WHERE target_table = $1 ORDER BY start_time DESC LIMIT 1',
-        [jobName]
-    );
-    return result.rows[0];
-};
-
-const getJobResult = async (tableName) => {
-    const result = await pool.query(`SELECT * FROM ${tableName}`);
-    return result.rows;
-};
-
-const getLTVByPetProfile = async () => {
-    const result = await pool.query('SELECT pet_profile, ltv FROM ltv_by_pet_profile');
-    return result.rows;
-    };
-
 module.exports = {
-    startJob,
-    getJobStatus,
-    getJobResult,
-    getLTVByPetProfile
+    startJob
 };
