@@ -1,4 +1,4 @@
-const pool = require('../../config/database');
+const { pool } = require('../../config/database');
 
 const organizationTables = [
     'tutor', 'pet', 'product', 'purchase', 'booking',
@@ -32,7 +32,7 @@ const applyOrganizationFilter = (query, params, tableName, organizationId) => {
                      JOIN ${joinTable} ${joinAlias} ON ${tableName}.${joinColumn} = ${joinAlias}.${joinColumn}
                      JOIN ${nestedRelationship.joinTable} ${nestedJoinAlias} ON ${joinAlias}.${nestedRelationship.joinColumn} = ${nestedJoinAlias}.${nestedRelationship.joinColumn}`
                 );
-                const whereClause = ` ${nestedJoinAlias}.organization_id = ${newParams.length + 1}`;
+                const whereClause = ` ${nestedJoinAlias}.organization_id = $${newParams.length + 1}`;
                 newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
                 newParams.push(organizationId);
             } else {
@@ -40,13 +40,14 @@ const applyOrganizationFilter = (query, params, tableName, organizationId) => {
                     `FROM ${tableName}`,
                     `FROM ${tableName} JOIN ${joinTable} ${joinAlias} ON ${tableName}.${joinColumn} = ${joinAlias}.${joinColumn}`
                 );
-                const whereClause = ` ${joinAlias}.organization_id = ${newParams.length + 1}`;
+                const whereClause = ` ${joinAlias}.organization_id = $${newParams.length + 1}`;
                 newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
                 newParams.push(organizationId);
             }
         } else {
-            const whereClause = ` ${tableName}.organization_id = ${newParams.length + 1}`;
+            const whereClause = ` ${tableName}.organization_id = $${newParams.length + 1}`;
             newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+            
             newParams.push(organizationId);
         }
     }
@@ -60,8 +61,9 @@ const find = (tableName) => async (filters, organizationId) => {
     
     const filterKeys = Object.keys(filters);
     if (filterKeys.length > 0) {
-        const whereClauses = filterKeys.map((key, i) => `${key} = ${i + 1}`);
+        const whereClauses = filterKeys.map((key, i) => `${key} = $${i + 1}`);
         query += ` WHERE ${whereClauses.join(' AND ')}`;
+        
         params.push(...Object.values(filters));
     }
 
@@ -89,7 +91,7 @@ const create = (tableName, fields) => async (data, organizationId) => {
     }
 
     const columns = allFields.map(f => `${f}`).join(', ');
-    const placeholders = allFields.map((_, i) => `${i + 1}`).join(', ');
+    const placeholders = allFields.map((_, i) => `$${i + 1}`).join(', ');
     const values = allFields.map(field => dataWithOrg[field]);
 
     const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
@@ -99,7 +101,7 @@ const create = (tableName, fields) => async (data, organizationId) => {
 };
 
 const update = (tableName, idField, fields) => async (id, data, organizationId) => {
-    const setClause = fields.map((field, i) => `${field} = ${i + 2}`).join(', ');
+    const setClause = fields.map((field, i) => `${field} = $${i + 2}`).join(', ');
     const values = fields.map(field => data[field]);
     
     let query = `UPDATE ${tableName} SET ${setClause} WHERE ${idField} = $1`;

@@ -1,21 +1,22 @@
 const organizationRepository = require('../repositories/postgres/organization.repository');
+const { UNAUTHORIZED, FORBIDDEN, INTERNAL_SERVER_ERROR } = require('../config/general');
 
 const authenticateApiKey = async (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
     if (!apiKey) {
-        return res.status(401).json({ message: 'API Key is required.' });
+        return res.status(UNAUTHORIZED).json({ message: 'API Key is required.' });
     }
 
     try {
         const organization = await organizationRepository.getOrganizationByApiKey(apiKey);
         if (!organization) {
-            return res.status(403).json({ message: 'Invalid API Key.' });
+            return res.status(FORBIDDEN).json({ message: 'Invalid API Key.' });
         }
 
         if (organization.links && organization.links.length > 0) {
             const referer = req.headers.referer || req.headers.origin;
             if (!referer || !organization.links.some(link => referer.startsWith(link))) {
-                return res.status(403).json({ message: 'Referer not allowed.' });
+                return res.status(FORBIDDEN).json({ message: 'Referer not allowed.' });
             }
         }
 
@@ -23,7 +24,7 @@ const authenticateApiKey = async (req, res, next) => {
         
         next();
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(INTERNAL_SERVER_ERROR).json({ message: error.message });
     }
 };
 
