@@ -1,7 +1,7 @@
 const batchRepository = require('../repositories/postgres/batch.repository');
 const batchService = require('../services/batch.service');
 const catchAsync = require('../utils/catchAsync');
-const { statusCodes } = require('../config/general');
+const { statusCodes, resourcesPath } = require('../config/general');
 
 const entityScriptMapping = {
     'vaccine-recommendation': 'run_vaccine_pipeline.sh',
