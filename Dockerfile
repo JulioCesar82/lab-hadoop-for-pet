@@ -15,19 +15,25 @@ COPY ./api .
 
 COPY ./api-resources /api-resources
 
-# Instalar PostgreSQL e Hadoop
-# Instalar dependências do sistema
+# Instalar dependências do sistema essenciais
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    openjdk-8-jdk \
+    openjdk-17-jdk \
     curl \
     wget \
     unzip \
     gnupg2 \
-    lsb-release \
-    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    apt-get update && \
+    lsb-release && \
+    rm -rf /var/lib/apt/lists/*
+
+# Adicionar o repositório PostgreSQL (This part should now run correctly)
+RUN apt-get update && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
+    gpg --dearmor -o /usr/share/keyrings/postgresql.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+
+# Instalar PostgreSQL
+RUN apt-get update && \
     apt-get install -y \
     postgresql-17 \
     postgresql-client-17 \
@@ -38,7 +44,7 @@ RUN apt-get update && \
     # redis-server
 
 # Definir variáveis de ambiente para Java e Hadoop
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV HADOOP_VERSION=2.9.2
 ENV SQOOP_VERSION=1.4.7
 ENV HADOOP_HOME=/usr/local/hadoop
