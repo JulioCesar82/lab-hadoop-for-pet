@@ -16,6 +16,7 @@ const authenticateApiKey = async (req, res, next) => {
         if (organization.links && organization.links.length > 0) {
             const referer = req.headers.referer || req.headers.origin;
             if (!referer || !organization.links.some(link => referer.startsWith(link))) {
+                console.error('Referer check failed:',  req.headers);
                 return res.status(statusCodes.FORBIDDEN).json({ message: 'Referer not allowed.' });
             }
         }
