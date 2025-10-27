@@ -19,7 +19,7 @@ const findAsync = (tableName) => async (filters, organizationId) => {
 
 const getByIdAsync = (tableName, idField) => async (id, organizationId) => {
     const items = await findAsync(tableName)({ [idField]: id }, organizationId);
-    return items[0];
+    return items.data[0];
 };
 
 const createAsync = (tableName, fields) => async (data, organizationId) => {
@@ -40,11 +40,11 @@ const createAsync = (tableName, fields) => async (data, organizationId) => {
 const updateAsync = (tableName, idField, fields) => async (id, data, organizationId) => {
     const items = await findAsync(tableName)({ [idField]: id }, organizationId);
 
-    if (items.length === 0) {
+    if (items.data.length === 0) {
         return null;
     }
 
-    const itemToUpdate = items[0];
+    const itemToUpdate = items.data[0];
     fields.forEach(field => {
         if (data[field] !== undefined) {
             itemToUpdate[field] = data[field];
@@ -61,7 +61,7 @@ const removeAsync = (tableName, idField) => async (id, organizationId) => {
         return null;
     }
 
-    const itemToRemove = items[0];
+    const itemToRemove = items.data[0];
     itemToRemove.nenabled = false;
 
     return itemToRemove;

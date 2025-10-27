@@ -3,6 +3,7 @@ const router = express.Router();
 
 const apiKeyController = require('../controllers/apiKey.controller');
 const { deleteApiKeyValidator } = require('../validators/apiKey.validator');
+const { validatePagination } = require('../validators/pagination.validator');
 const { authenticateApiKeyAsync } = require('../middleware/auth');
 
 router.use(authenticateApiKeyAsync);
@@ -54,19 +55,46 @@ router.post('/', apiKeyController.createAsync);
  *   get:
  *     summary: Get all API keys for the authenticated organization
  *     tags: [ApiKeys]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: A list of API keys
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ApiKey'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ApiKey'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
  *       500:
  *         description: Some server error
  */
-router.get('/', apiKeyController.findAllAsync);
+router.get('/', validatePagination, apiKeyController.findAllAsync);
 
 /**
  * @swagger

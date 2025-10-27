@@ -3,6 +3,7 @@ const router = express.Router();
 
 const tutorController = require('../controllers/tutor.controller');
 const { validateTutor } = require('../validators/tutor.validator');
+const { validatePagination } = require('../validators/pagination.validator');
 const { authenticateApiKeyAsync } = require('../middleware/auth');
 
 router.use(authenticateApiKeyAsync);
@@ -53,17 +54,28 @@ router.use(authenticateApiKeyAsync);
  *   get:
  *     summary: Returns the list of all the tutors
  *     tags: [Tutors]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: The list of the tutors
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Tutor'
+ *               $ref: '#/components/schemas/PaginatedTutors'
  */
-router.get('/', tutorController.getAllAsync);
+router.get('/', validatePagination, tutorController.getAllAsync);
 
 /**
  * @swagger
@@ -202,6 +214,18 @@ router.post('/notify-all', tutorController.notifyAllTutorsAsync);
  *           type: integer
  *         required: true
  *         description: The tutor id
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: A list of booking recommendations
@@ -214,7 +238,7 @@ router.post('/notify-all', tutorController.notifyAllTutorsAsync);
  *       400:
  *         description: Bad request
  */
-router.get('/:id/booking-recommendations', tutorController.getBookingRecommendationsAsync);
+router.get('/:id/booking-recommendations', validatePagination, tutorController.getBookingRecommendationsAsync);
 
 /**
  * @swagger
@@ -229,6 +253,18 @@ router.get('/:id/booking-recommendations', tutorController.getBookingRecommendat
  *           type: integer
  *         required: true
  *         description: The tutor id
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: A list of vaccine recommendations
@@ -241,7 +277,7 @@ router.get('/:id/booking-recommendations', tutorController.getBookingRecommendat
  *       400:
  *         description: Bad request
  */
-router.get('/:id/vaccine-recommendations', tutorController.getVaccineRecommendationsAsync);
+router.get('/:id/vaccine-recommendations', validatePagination, tutorController.getVaccineRecommendationsAsync);
 
 /**
  * @swagger

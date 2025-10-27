@@ -9,7 +9,8 @@ const createAsync = catchAsync(async (req, res) => {
 });
 
 const findAllAsync = catchAsync(async (req, res) => {
-    const apiKeys = await apiKeyRepository.getApiKeysByOrganizationIdAsync(req.organization_id);
+    const { page, pageSize } = req.query;
+    const apiKeys = await apiKeyRepository.getApiKeysByOrganizationIdAsync(req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).json(apiKeys);
 });

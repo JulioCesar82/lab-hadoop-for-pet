@@ -2,7 +2,8 @@ const catchAsync = require('../utils/catchAsync');
 const { statusCodes } = require('../config/general');
 
 const getAllAsync = (repository) => catchAsync(async (req, res) => {
-    const items = await repository.findAsync(req.organization_id);
+    const { page, pageSize } = req.query;
+    const items = await repository.findAsync({}, req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).send(items);
 });

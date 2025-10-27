@@ -2,6 +2,7 @@ const batchRepository = require('../repositories/postgres/batch.repository');
 const batchService = require('../services/batch.service');
 const catchAsync = require('../utils/catchAsync');
 const { statusCodes } = require('../config/general');
+const { validateJobName } = require('../utils/jobValidator');
 
 exports.startJobAsync = catchAsync(async (req, res) => {
     const { entity } = req.params;

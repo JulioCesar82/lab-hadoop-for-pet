@@ -1,4 +1,4 @@
-const { allowed_commands, allowed_jobs } = require('../config/batch');
+const { allowed_commands, table_by_job, allowed_jobs } = require('../config/batch');
 
 /**
  * Validates if a job name is allowed
@@ -27,7 +27,14 @@ const getAllowedCommand = (jobName) => {
     return allowed_commands.get(jobName);
 };
 
+const getTableByJobName = (jobName) => {
+    validateJobName(jobName);
+    
+    return table_by_job.get(jobName);
+};
+
 module.exports = {
     validateJobName,
-    getAllowedCommand
+    getAllowedCommand,
+    getTableByJobName
 };

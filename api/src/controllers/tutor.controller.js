@@ -8,14 +8,16 @@ const tutorCrudController = crudController(tutorRepository);
 
 const getBookingRecommendationsAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const recommendations = await tutorRepository.getBookingRecommendationsAsync(id, req.organization_id);
+    const { page, pageSize } = req.query;
+    const recommendations = await tutorRepository.getBookingRecommendationsAsync(id, req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).send(recommendations);
 });
 
 const getVaccineRecommendationsAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const recommendations = await tutorRepository.getVaccineRecommendationsAsync(id, req.organization_id);
+    const { page, pageSize } = req.query;
+    const recommendations = await tutorRepository.getVaccineRecommendationsAsync(id, req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).send(recommendations);
 });

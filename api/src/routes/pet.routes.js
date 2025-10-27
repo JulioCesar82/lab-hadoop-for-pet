@@ -3,6 +3,7 @@ const router = express.Router();
 
 const petController = require('../controllers/pet.controller');
 const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
+const { validatePagination } = require('../validators/pagination.validator');
 
 const { authenticateApiKeyAsync } = require('../middleware/auth');
 
@@ -299,19 +300,29 @@ router.get('/:id', petController.getByIdAsync);
  *         schema:
  *           type: string
  *         description: The fur type of the pet
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: A list of pets.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Pet'
+ *               $ref: '#/components/schemas/PaginatedPets'
  *       500:
  *         description: Some server error
  */
-router.get('/', petController.findPetsByCriteriaAsync);
+router.get('/', validatePagination, petController.findPetsByCriteriaAsync);
 
 
 // PUT (Ignore all recommendations for a pet): /pet/{id}/recommendations/ignore-all
@@ -352,6 +363,18 @@ router.put('/:id/recommendations/ignore-all', petController.updateRecommendation
  *           type: integer
  *         required: true
  *         description: The pet id
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: A list of booking recommendations.
@@ -360,7 +383,7 @@ router.put('/:id/recommendations/ignore-all', petController.updateRecommendation
  *       500:
  *         description: Some server error
  */
-router.get('/:id/recommendations/booking', petController.getBookingRecommendationsAsync);
+router.get('/:id/recommendations/booking', validatePagination, petController.getBookingRecommendationsAsync);
 
 // GET (Finds vaccine recommendations by id): /pet/{id}/recommendations/vaccine
 /**
@@ -376,6 +399,18 @@ router.get('/:id/recommendations/booking', petController.getBookingRecommendatio
  *           type: integer
  *         required: true
  *         description: The pet id
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number to retrieve.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items to retrieve per page.
  *     responses:
  *       200:
  *         description: A list of vaccine recommendations.
@@ -384,7 +419,7 @@ router.get('/:id/recommendations/booking', petController.getBookingRecommendatio
  *       500:
  *         description: Some server error
  */
-router.get('/:id/recommendations/vaccine', petController.getVaccineRecommendationsAsync);
+router.get('/:id/recommendations/vaccine', validatePagination, petController.getVaccineRecommendationsAsync);
 
 // DELETE (Disables a booking recommendation for a pet): /pet/{id}/recommendations/booking
 /**

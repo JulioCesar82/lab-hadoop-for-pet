@@ -5,7 +5,7 @@ const {
     validateFields,
     validateValue 
 } = require('../../utils/sqlSanitizer');
-const { organizationTables, tableRelationships } = require('../../config/database');
+const { organizationTables, tableRelationships, default_page, default_page_size } = require('../../config/database');
 
 const applyOrganizationFilter = (query, params, tableName, organizationId) => {
     let newQuery = query;
@@ -82,34 +82,55 @@ const applyOrganizationFilter = (query, params, tableName, organizationId) => {
     return { query: newQuery, params: newParams };
 };
 
-const findAsync = (tableName) => async (filters, organizationId) => {
+const findAsync = (tableName) => async (filters, organizationId, page = default_page, pageSize = default_page_size) => {
     validateTableName(tableName);
-    
-    let query = `SELECT * FROM ${tableName}`;
+
+    let selectQuery = `SELECT * FROM ${tableName}`;
+    let countQuery = `SELECT COUNT(*) FROM ${tableName}`;
     const params = [];
-    
+
     const filterKeys = Object.keys(filters || {});
     if (filterKeys.length > 0) {
         filterKeys.forEach(key => {
             validateColumnName(key);
             validateValue(filters[key]);
         });
-        
+
         const whereClauses = filterKeys.map((key, i) => `${tableName}.${key} = $${i + 1}`);
-        query += ` WHERE ${whereClauses.join(' AND ')}`;
-        
+        const whereString = ` WHERE ${whereClauses.join(' AND ')}`;
+        selectQuery += whereString;
+        countQuery += whereString;
+
         params.push(...Object.values(filters));
     }
 
-    const { query: filteredQuery, params: finalParams } = applyOrganizationFilter(query, params, tableName, organizationId);
-    
-    const result = await pool.query(filteredQuery, finalParams);
-    return result.rows;
+    const { query: filteredSelectQuery, params: finalSelectParams } = applyOrganizationFilter(selectQuery, params, tableName, organizationId);
+    const { query: filteredCountQuery, params: finalCountParams } = applyOrganizationFilter(countQuery, [...params], tableName, organizationId);
+
+    const totalItemsResult = await pool.query(filteredCountQuery, finalCountParams);
+    const totalItems = parseInt(totalItemsResult.rows[0].count, default_page_size);
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const offset = (page - default_page) * pageSize;
+
+    const paginatedQuery = `${filteredSelectQuery} LIMIT $${finalSelectParams.length + 1} OFFSET $${finalSelectParams.length + 2}`;
+    const paginatedParams = [...finalSelectParams, pageSize, offset];
+
+    const result = await pool.query(paginatedQuery, paginatedParams);
+
+    return {
+        data: result.rows,
+        pagination: {
+            totalItems,
+            totalPages,
+            currentPage: page,
+            pageSize,
+        },
+    };
 };
 
 const getByIdAsync = (tableName, idField) => async (id, organizationId) => {
     const rows = await findAsync(tableName)({ [idField]: id }, organizationId);
-    return rows[0];
+    return rows.data[0];
 };
 
 const createAsync = (tableName, fields) => async (data, organizationId) => {

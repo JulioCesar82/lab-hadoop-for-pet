@@ -52,5 +52,8 @@ module.exports = {
         vaccination_record: { joinTable: 'pet', joinColumn: 'pet_id' },
         vaccine_recommendation: { joinTable: 'pet', joinColumn: 'pet_id' },
         booking_recommendation: { joinTable: 'pet', joinColumn: 'pet_id' },
-    }
+    },
+    default_page: 1, 
+    default_page_size: 10,
+    max_page_size: Number.MAX_SAFE_INTEGER
 };

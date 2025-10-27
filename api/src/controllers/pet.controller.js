@@ -11,7 +11,8 @@ const findPetsByCriteriaAsync = catchAsync(async (req, res) => {
         return petCrudController.getByIdAsync(req, res);
     }
 
-    const pets = await petRepository.findPetsByCriteriaAsync(req.query, req.organization_id);
+    const { page, pageSize, ...criteria } = req.query;
+    const pets = await petRepository.findPetsByCriteriaAsync(criteria, req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).send(pets);
 });
@@ -39,14 +40,16 @@ const updateRecommendationAsync = catchAsync(async (req, res) => {
 
 const getBookingRecommendationsAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const recommendations = await petRepository.getBookingRecommendationsAsync(id, req.organization_id);
+    const { page, pageSize } = req.query;
+    const recommendations = await petRepository.getBookingRecommendationsAsync(id, req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).send(recommendations);
 });
 
 const getVaccineRecommendationsAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const recommendations = await petRepository.getVaccineRecommendationsAsync(id, req.organization_id);
+    const { page, pageSize } = req.query;
+    const recommendations = await petRepository.getVaccineRecommendationsAsync(id, req.organization_id, page, pageSize);
 
     res.status(statusCodes.OK).send(recommendations);
 });

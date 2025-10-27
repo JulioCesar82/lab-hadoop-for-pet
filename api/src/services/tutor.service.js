@@ -2,16 +2,17 @@
 const createCrudRepository = require('../repositories/postgres/crud.repository');
 const notificationService = require('./notification.service');
 const { getBookingRecommendationsAsync, getVaccineRecommendationsAsync } = require('../repositories/postgres/tutor.repository');
+const { default_page, max_page_size } = require('../config/database');
 
 const tutorFields = ['name', 'email', 'phone'];
 const tutorCrudrepository = createCrudRepository('tutor', 'tutor_id', tutorFields);
 
 const notifyAllTutorsAsync = async (organizationId) => {
     // 1. Busca todos os tutores
-    const allTutors = await tutorCrudrepository.findAsync({}, organizationId);
+    const allTutors = await tutorCrudrepository.findAsync({}, organizationId, default_page, max_page_size);
 
     // 2. Itera sobre cada tutor para verificar e enviar notificações
-    for (const tutor of allTutors) {
+    for (const tutor of allTutors.data) {
         // Busca recomendações de agendamento e vacinas
         const bookingRecommendations = await getBookingRecommendationsAsync(tutor.tutor_id, organizationId);
         const vaccineRecommendations = await getVaccineRecommendationsAsync(tutor.tutor_id, organizationId);

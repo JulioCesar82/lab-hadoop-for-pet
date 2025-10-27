@@ -1,7 +1,6 @@
-const crypto = require('crypto');
-
 const { pool } = require('../../config/database');
 const crudRepository = require('./crud.repository');
+const { generateApiKey } = require('../../config/organizarion');
 
 const organizationFields = ['name', 'social_name', 'description', 'identification_code', 'links'];
 const organizationCrudRepository = crudRepository('organization', 'organization_id', organizationFields);
@@ -27,7 +26,7 @@ const createOrganizationAsync = async (organizationData, inviteCode) => {
             [inviteCode]
         );
 
-        const apiKey = crypto.randomBytes(32).toString('hex');
+        const apiKey = generateApiKey();
         await client.query(
             'INSERT INTO organization_apikey (organization_id, api_key) VALUES ($1, $2)',
             [newOrganization.organization_id, apiKey]

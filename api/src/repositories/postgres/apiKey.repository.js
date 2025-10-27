@@ -1,17 +1,16 @@
-const crypto = require('crypto');
-
 const crudRepository = require('./crud.repository');
+const { generateApiKey } = require('../../config/organizarion');
 
 const apiKeyFields = ['organization_id', 'api_key'];
 const apiKeyCrudRepository = crudRepository('organization_apikey', 'api_key', apiKeyFields);
 
 const createApiKeyAsync = async (organizationId) => {
-    const apiKey = crypto.randomBytes(32).toString('hex');
+    const apiKey = generateApiKey();
     return await apiKeyCrudRepository.createAsync({ organization_id: organizationId, api_key: apiKey });
 };
 
-const getApiKeysByOrganizationIdAsync = async (organizationId) => {
-    return await apiKeyCrudRepository.findAsync({ organization_id: organizationId, nenabled: true });
+const getApiKeysByOrganizationIdAsync = async (organizationId, page, pageSize) => {
+    return await apiKeyCrudRepository.findAsync({ organization_id: organizationId, nenabled: true }, organizationId, page, pageSize);
 };
 
 const deleteApiKeyAsync = async (organizationId, apiKey) => {
@@ -29,7 +28,7 @@ const deleteApiKeyAsync = async (organizationId, apiKey) => {
 
 const getOrganizationByApiKeyAsync = async (apiKey) => {
     const results = await apiKeyCrudRepository.findAsync({ api_key: apiKey, nenabled: true });
-    return results[0];
+    return results.data[0];
 };
 
 module.exports = {
