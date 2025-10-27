@@ -6,7 +6,7 @@ const crudRepository = require('./crud.repository');
 const organizationFields = ['name', 'social_name', 'description', 'identification_code', 'links'];
 const organizationCrudRepository = crudRepository('organization', 'organization_id', organizationFields);
 
-const createOrganization = async (organizationData, inviteCode) => {
+const createOrganizationAsync = async (organizationData, inviteCode) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
@@ -20,7 +20,7 @@ const createOrganization = async (organizationData, inviteCode) => {
             throw new Error('Invalid or expired invite code.');
         }
 
-        const newOrganization = await organizationCrudRepository.create(organizationData);
+        const newOrganization = await organizationCrudRepository.createAsync(organizationData);
 
         await client.query(
             'UPDATE organization_invite SET nenabled = FALSE WHERE invite_code = $1',
@@ -44,7 +44,7 @@ const createOrganization = async (organizationData, inviteCode) => {
     }
 };
 
-const getOrganizationByApiKey = async (apiKey) => {
+const getOrganizationByApiKeyAsync = async (apiKey) => {
     const client = await pool.connect();
     
     const result = await client.query(
@@ -56,8 +56,8 @@ const getOrganizationByApiKey = async (apiKey) => {
 };
 
 module.exports = {
-    createOrganization,
-    getOrganizationById: organizationCrudRepository.getById,
-    disableOrganization: organizationCrudRepository.remove,
-    getOrganizationByApiKey,
+    createOrganizationAsync,
+    getOrganizationByIdAsync: organizationCrudRepository.getByIdAsync,
+    disableOrganizationAsync: organizationCrudRepository.removeAsync,
+    getOrganizationByApiKeyAsync
 };

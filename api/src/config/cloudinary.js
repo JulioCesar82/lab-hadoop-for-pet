@@ -5,4 +5,3 @@ module.exports = {
     folder: process.env.CLOUDINARY_UPLOAD_FOLDER,
     format: process.env.CLOUDINARY_UPLOAD_FORMAT
 };
-

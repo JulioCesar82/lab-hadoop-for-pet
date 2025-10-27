@@ -99,7 +99,7 @@ INSERT INTO vaccine_equivalence (vaccine_id, equivalent_vaccine_id) VALUES
 ON CONFLICT DO NOTHING;
 `;
 
-const insertDML = async () => {
+const insertDMLAsync = async () => {
   try {
     await pool.query(DML_SCRIPT);
     console.log('DML inserted successfully');
@@ -108,4 +108,4 @@ const insertDML = async () => {
   }
 };
 
-module.exports = insertDML;
+module.exports = insertDMLAsync;

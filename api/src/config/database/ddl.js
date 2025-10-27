@@ -357,7 +357,7 @@ CREATE INDEX IF NOT EXISTS idx_pet_enabled ON pet(nenabled);
 -- ... Adicione este índice em todas as tabelas onde a exclusão lógica será usada frequentemente em cláusulas WHERE.
 `;
 
-const createDDL = async () => {
+const createDDLAsync = async () => {
   try {
     await pool.query(DDL_SCRIPT);
     console.log('DDL created successfully');
@@ -366,4 +366,4 @@ const createDDL = async () => {
   }
 };
 
-module.exports = createDDL;
+module.exports = createDDLAsync;

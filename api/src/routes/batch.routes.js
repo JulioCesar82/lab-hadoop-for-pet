@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const batchController = require('../controllers/batch.controller');
-const { authenticateApiKey } = require('../middleware/auth');
-router.use(authenticateApiKey);
+const { authenticateApiKeyAsync } = require('../middleware/auth');
 
+router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
@@ -27,7 +27,8 @@ router.use(authenticateApiKey);
  *           enum: 
  *             - vaccine-recommendation
  *             - booking-reference
- *             - booking-recommendation, ltv-by-pet-profile.
+ *             - booking-recommendation
+ *             - ltv-by-pet-profile
  *         required: true
  *         description: The entity to process
  *     responses:
@@ -36,7 +37,7 @@ router.use(authenticateApiKey);
  *       500:
  *         description: Some server error
  */
-router.post('/:entity', batchController.startJob);
+router.post('/:entity', batchController.startJobAsync);
 
 /**
  * @swagger
@@ -57,7 +58,7 @@ router.post('/:entity', batchController.startJob);
  *       500:
  *         description: Some server error
  */
-router.get('/:id/status', batchController.getJobStatus);
+router.get('/:id/status', batchController.getJobStatusAsync);
 
 /**
  * @swagger
@@ -78,7 +79,7 @@ router.get('/:id/status', batchController.getJobStatus);
  *       500:
  *         description: Some server error
  */
-router.get('/:id/result', batchController.getJobResult);
+router.get('/:id/result', batchController.getJobResultAsync);
 
 /**
  * @swagger
@@ -92,6 +93,6 @@ router.get('/:id/result', batchController.getJobResult);
  *       500:
  *         description: Some server error
  */
-router.get('/ltv-by-pet-profile', batchController.getLTVByPetProfile);
+router.get('/ltv-by-pet-profile', batchController.getLTVByPetProfileAsync);
 
 module.exports = router;

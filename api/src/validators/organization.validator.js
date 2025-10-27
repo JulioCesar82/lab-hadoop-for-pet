@@ -11,5 +11,5 @@ const createOrganizationValidator = [
 ];
 
 module.exports = {
-    createOrganizationValidator,
+    createOrganizationValidator
 };

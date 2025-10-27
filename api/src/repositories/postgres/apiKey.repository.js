@@ -1,19 +1,20 @@
 const crypto = require('crypto');
+
 const crudRepository = require('./crud.repository');
 
 const apiKeyFields = ['organization_id', 'api_key'];
 const apiKeyCrudRepository = crudRepository('organization_apikey', 'api_key', apiKeyFields);
 
-const createApiKey = async (organizationId) => {
+const createApiKeyAsync = async (organizationId) => {
     const apiKey = crypto.randomBytes(32).toString('hex');
-    return await apiKeyCrudRepository.create({ organization_id: organizationId, api_key: apiKey });
+    return await apiKeyCrudRepository.createAsync({ organization_id: organizationId, api_key: apiKey });
 };
 
-const getApiKeysByOrganizationId = async (organizationId) => {
-    return await apiKeyCrudRepository.find({ organization_id: organizationId, nenabled: true });
+const getApiKeysByOrganizationIdAsync = async (organizationId) => {
+    return await apiKeyCrudRepository.findAsync({ organization_id: organizationId, nenabled: true });
 };
 
-const deleteApiKey = async (organizationId, apiKey) => {
+const deleteApiKeyAsync = async (organizationId, apiKey) => {
     const { pool } = require('../../config/database');
 
     const client = await pool.connect();
@@ -26,14 +27,14 @@ const deleteApiKey = async (organizationId, apiKey) => {
     return result.rows[0];
 };
 
-const getOrganizationByApiKey = async (apiKey) => {
-    const results = await apiKeyCrudRepository.find({ api_key: apiKey, nenabled: true });
+const getOrganizationByApiKeyAsync = async (apiKey) => {
+    const results = await apiKeyCrudRepository.findAsync({ api_key: apiKey, nenabled: true });
     return results[0];
 };
 
 module.exports = {
-    createApiKey,
-    getApiKeysByOrganizationId,
-    deleteApiKey,
-    getOrganizationByApiKey,
+    createApiKeyAsync,
+    getApiKeysByOrganizationIdAsync,
+    deleteApiKeyAsync,
+    getOrganizationByApiKeyAsync
 };

@@ -1,14 +1,14 @@
 const organizationRepository = require('../repositories/postgres/organization.repository');
-const { statusCodes } = require('../config/general');
+const { statusCodes, apiKeyHeaderName } = require('../config/general');
 
-const authenticateApiKey = async (req, res, next) => {
-    const apiKey = req.headers['x-api-key'];
+const authenticateApiKeyAsync = async (req, res, next) => {
+    const apiKey = req.headers[apiKeyHeaderName];
     if (!apiKey) {
         return res.status(statusCodes.UNAUTHORIZED).json({ message: 'API Key is required.' });
     }
 
     try {
-        const organization = await organizationRepository.getOrganizationByApiKey(apiKey);
+        const organization = await organizationRepository.getOrganizationByApiKeyAsync(apiKey);
         if (!organization) {
             return res.status(statusCodes.FORBIDDEN).json({ message: 'Invalid API Key.' });
         }
@@ -32,4 +32,6 @@ const authenticateApiKey = async (req, res, next) => {
     }
 };
 
-module.exports = { authenticateApiKey };
+module.exports = { 
+    authenticateApiKeyAsync
+};

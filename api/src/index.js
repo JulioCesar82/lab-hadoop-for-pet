@@ -21,11 +21,11 @@ app.use('/api', routes);
 const errorHandler = require('./middleware/errorHandler');
 app.use(errorHandler);
 
-const createDDL = require('./config/database/ddl');
-const insertDML = require('./config/database/dml');
+const createDDLAsync = require('./config/database/ddl');
+const insertDMLAsync = require('./config/database/dml');
 
 app.listen(apiPort, async () => {
-  await createDDL();
-  await insertDML();
+  await createDDLAsync();
+  await insertDMLAsync();
   console.log(`Server is running on port ${apiPort}`);
 });

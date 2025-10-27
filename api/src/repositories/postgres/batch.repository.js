@@ -1,6 +1,6 @@
 const { pool } = require('../../config/database');
 
-const getJobStatus = async (id) => {
+const getJobStatusAsync = async (id) => {
     const result = await pool.query(
         'SELECT * FROM execution_history WHERE execution_id = $1',
         [id]
@@ -9,7 +9,7 @@ const getJobStatus = async (id) => {
     return result.rows[0];
 };
 
-const getJobResult = async (id) => {
+const getJobResultAsync = async (id) => {
     const jobResult = await pool.query(
         'SELECT target_table FROM execution_history WHERE execution_id = $1',
         [id]
@@ -21,14 +21,14 @@ const getJobResult = async (id) => {
     return result.rows;
 };
 
-const getLTVByPetProfile = async () => {
+const getLTVByPetProfileAsync = async () => {
     const result = await pool.query('SELECT species, animal_type, fur_type, total_value FROM ltv_by_pet_profile WHERE nenabled = TRUE');
 
     return result.rows;
 };
 
 module.exports = {
-    getJobStatus,
-    getJobResult,
-    getLTVByPetProfile
+    getJobStatusAsync,
+    getJobResultAsync,
+    getLTVByPetProfileAsync
 };

@@ -1,4 +1,12 @@
 const express = require('express');
+const router = express.Router();
+
+const petController = require('../controllers/pet.controller');
+const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
+
+const { authenticateApiKeyAsync } = require('../middleware/auth');
+
+router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
@@ -35,7 +43,7 @@ const express = require('express');
  *           description: The id of the tutor of the pet.
  *       example:
  *         name: "Bolinha"
- *         species: "Cachorro"
+ *         species: "Cão"
  *         animal_type: "Pug"
  *         fur_type: "Curto"
  *         birth_date: "2022-01-15"
@@ -48,14 +56,6 @@ const express = require('express');
  *   name: Pets
  *   description: The pets managing API
  */
-
-const router = express.Router();
-const { authenticateApiKey } = require('../middleware/auth');
-
-router.use(authenticateApiKey);
-const petController = require('../controllers/pet.controller');
-const { validatePet, validatePetList, validateDeletePetList } = require('../validators/pet.validator');
-const upload = require('../config/upload-multipart-form-data');
 
 // POST (Creates list of pets with given input array): /pet/createWithList
 /**
@@ -78,7 +78,7 @@ const upload = require('../config/upload-multipart-form-data');
  *       500:
  *         description: Some server error
  */
-router.post('/createWithList', validatePetList, petController.createWithList);
+router.post('/createWithList', validatePetList, petController.createWithListAsync);
 
 // POST (Add a new pet): /pet
 /**
@@ -103,7 +103,7 @@ router.post('/createWithList', validatePetList, petController.createWithList);
  *       500:
  *         description: Some server error
  */
-router.post('/', validatePet, petController.create);
+router.post('/', validatePet, petController.createAsync);
 
 // PUT (uploads an image): /pet/{id}/uploadImage
 /**
@@ -136,7 +136,7 @@ router.post('/', validatePet, petController.create);
  *       500:
  *         description: Some server error
  */
-router.put('/:id/uploadImage', upload.single('image'), petController.uploadImage);
+router.put('/:id/uploadImage', petController.uploadImageAsync);
 
 // PUT (Update an existing pet): /pet/{id}
 /**
@@ -170,7 +170,7 @@ router.put('/:id/uploadImage', upload.single('image'), petController.uploadImage
  *       500:
  *         description: Some server error
  */
-router.put('/:id', validatePet, petController.update);
+router.put('/:id', validatePet, petController.updateAsync);
 
 // PUT (Updates list of pets with given input array): /pet/updateWithList
 /**
@@ -193,7 +193,7 @@ router.put('/:id', validatePet, petController.update);
  *       500:
  *         description: Some server error
  */
-router.put('/updateWithList', validatePetList, petController.updateWithList);
+router.put('/updateWithList', validatePetList, petController.updateWithListAsync);
 
 // DELETE (Delete an pet): /pet/{id}
 /**
@@ -217,7 +217,7 @@ router.put('/updateWithList', validatePetList, petController.updateWithList);
  *       500:
  *         description: Some server error
  */
-router.delete('/:id', petController.remove);
+router.delete('/:id', petController.removeAsync);
 
 // DELETE (Deletes list of pets with given input array): /pet/deleteWithList
 /**
@@ -245,7 +245,7 @@ router.delete('/:id', petController.remove);
  *       500:
  *         description: Some server error
  */
-router.delete('/deleteWithList', validateDeletePetList, petController.deleteWithList);
+router.delete('/deleteWithList', validateDeletePetList, petController.deleteWithListAsync);
 
 // GET (Finds Pets by id): /pet?id={id}
 /**
@@ -271,7 +271,7 @@ router.delete('/deleteWithList', validateDeletePetList, petController.deleteWith
  *       404:
  *         description: The pet was not found
  */
-router.get('/:id', petController.getById);
+router.get('/:id', petController.getByIdAsync);
 
 // GET (Finds Pets by species, animal_type or fur_type): /pet?type={type}&animal_type={animal_type}&fur_type={fur_type}
 /**
@@ -285,6 +285,9 @@ router.get('/:id', petController.getById);
  *         name: species
  *         schema:
  *           type: string
+ *           enum: 
+ *             - Cão
+ *             - Gato
  *         description: The species of the pet
  *       - in: query
  *         name: animal_type
@@ -308,7 +311,7 @@ router.get('/:id', petController.getById);
  *       500:
  *         description: Some server error
  */
-router.get('/', petController.findPetsByCriteria);
+router.get('/', petController.findPetsByCriteriaAsync);
 
 
 // PUT (Ignore all recommendations for a pet): /pet/{id}/recommendations/ignore-all
@@ -333,7 +336,7 @@ router.get('/', petController.findPetsByCriteria);
  *       500:
  *         description: Some server error
  */
-router.put('/:id/recommendations/ignore-all', petController.updateRecommendation);
+router.put('/:id/recommendations/ignore-all', petController.updateRecommendationAsync);
 
 // GET (Finds booking recommendations by id): /pet/{id}/recommendations/booking
 /**
@@ -357,7 +360,7 @@ router.put('/:id/recommendations/ignore-all', petController.updateRecommendation
  *       500:
  *         description: Some server error
  */
-router.get('/:id/recommendations/booking', petController.getBookingRecommendations);
+router.get('/:id/recommendations/booking', petController.getBookingRecommendationsAsync);
 
 // GET (Finds vaccine recommendations by id): /pet/{id}/recommendations/vaccine
 /**
@@ -381,7 +384,7 @@ router.get('/:id/recommendations/booking', petController.getBookingRecommendatio
  *       500:
  *         description: Some server error
  */
-router.get('/:id/recommendations/vaccine', petController.getVaccineRecommendations);
+router.get('/:id/recommendations/vaccine', petController.getVaccineRecommendationsAsync);
 
 // DELETE (Disables a booking recommendation for a pet): /pet/{id}/recommendations/booking
 /**
@@ -405,7 +408,7 @@ router.get('/:id/recommendations/vaccine', petController.getVaccineRecommendatio
  *       500:
  *         description: Some server error
  */
-router.delete('/:id/recommendations/booking', petController.disableBookingRecommendation);
+router.delete('/:id/recommendations/booking', petController.disableBookingRecommendationAsync);
 
 // DELETE (Disables a specific vaccine recommendation for a pet): /pet/{id}/recommendations/vaccine/{vaccineName}
 /**
@@ -435,7 +438,7 @@ router.delete('/:id/recommendations/booking', petController.disableBookingRecomm
  *       500:
  *         description: Some server error
  */
-router.delete('/:id/recommendations/vaccine/:vaccineName', petController.disableVaccineRecommendation);
+router.delete('/:id/recommendations/vaccine/:vaccineName', petController.disableVaccineRecommendationAsync);
 
 
 module.exports = router;

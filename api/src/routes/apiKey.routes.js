@@ -3,9 +3,9 @@ const router = express.Router();
 
 const apiKeyController = require('../controllers/apiKey.controller');
 const { deleteApiKeyValidator } = require('../validators/apiKey.validator');
-const { authenticateApiKey } = require('../middleware/auth');
+const { authenticateApiKeyAsync } = require('../middleware/auth');
 
-router.use(authenticateApiKey);
+router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
@@ -46,7 +46,7 @@ router.use(authenticateApiKey);
  *       500:
  *         description: Some server error
  */
-router.post('/', apiKeyController.create);
+router.post('/', apiKeyController.createAsync);
 
 /**
  * @swagger
@@ -66,7 +66,7 @@ router.post('/', apiKeyController.create);
  *       500:
  *         description: Some server error
  */
-router.get('/', apiKeyController.findAll);
+router.get('/', apiKeyController.findAllAsync);
 
 /**
  * @swagger
@@ -89,6 +89,6 @@ router.get('/', apiKeyController.findAll);
  *       500:
  *         description: Some server error
  */
-router.delete('/:api_key', deleteApiKeyValidator, apiKeyController.remove);
+router.delete('/:api_key', deleteApiKeyValidator, apiKeyController.removeAsync);
 
 module.exports = router;

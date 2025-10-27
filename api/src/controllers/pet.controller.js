@@ -6,19 +6,18 @@ const { statusCodes } = require('../config/general');
 
 const petCrudController = crudController(petRepository);
 
-const findPetsByCriteria = catchAsync(async (req, res) => {
+const findPetsByCriteriaAsync = catchAsync(async (req, res) => {
     if (req.query.id) {
-        return petCrudController.getById(req, res);
+        return petCrudController.getByIdAsync(req, res);
     }
 
-    const pets = await petRepository.findPetsByCriteria(req.query, req.organization_id);
+    const pets = await petRepository.findPetsByCriteriaAsync(req.query, req.organization_id);
 
     res.status(statusCodes.OK).send(pets);
 });
 
-const uploadImage = catchAsync(async (req, res) => {
-    const id = req.params.id;
-    const pet = await petService.uploadImage(id, req.file, req.organization_id);
+const uploadImageAsync = catchAsync(async (req, res) => {
+    const pet = await petService.uploadImageAsync(req, res, req.organization_id);
 
     if (pet) {
         res.status(statusCodes.OK).send(pet);
@@ -27,9 +26,9 @@ const uploadImage = catchAsync(async (req, res) => {
     }
 });
 
-const updateRecommendation = catchAsync(async (req, res) => {
+const updateRecommendationAsync = catchAsync(async (req, res) => {
     const { id, ignore } = req.body;
-    const pet = await petRepository.updateRecommendation(id, ignore, req.organization_id);
+    const pet = await petRepository.updateRecommendationAsync(id, ignore, req.organization_id);
 
     if (pet) {
         res.status(statusCodes.OK).send(pet);
@@ -38,41 +37,41 @@ const updateRecommendation = catchAsync(async (req, res) => {
     }
 });
 
-const getBookingRecommendations = catchAsync(async (req, res) => {
+const getBookingRecommendationsAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const recommendations = await petRepository.getBookingRecommendations(id, req.organization_id);
+    const recommendations = await petRepository.getBookingRecommendationsAsync(id, req.organization_id);
 
     res.status(statusCodes.OK).send(recommendations);
 });
 
-const getVaccineRecommendations = catchAsync(async (req, res) => {
+const getVaccineRecommendationsAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    const recommendations = await petRepository.getVaccineRecommendations(id, req.organization_id);
+    const recommendations = await petRepository.getVaccineRecommendationsAsync(id, req.organization_id);
 
     res.status(statusCodes.OK).send(recommendations);
 });
 
-const disableBookingRecommendation = catchAsync(async (req, res) => {
+const disableBookingRecommendationAsync = catchAsync(async (req, res) => {
     const { id } = req.params;
-    await petRepository.disableBookingRecommendation(id, req.organization_id);
+    await petRepository.disableBookingRecommendationAsync(id, req.organization_id);
 
     res.status(statusCodes.NO_CONTENT).send();
 });
 
-const disableVaccineRecommendation = catchAsync(async (req, res) => {
+const disableVaccineRecommendationAsync = catchAsync(async (req, res) => {
     const { id, vaccineName } = req.params;
-    await petRepository.disableVaccineRecommendation(id, vaccineName, req.organization_id);
+    await petRepository.disableVaccineRecommendationAsync(id, vaccineName, req.organization_id);
 
     res.status(statusCodes.NO_CONTENT).send();
 });
 
 module.exports = {
     ...petCrudController,
-    findPetsByCriteria,
-    uploadImage,
-    updateRecommendation,
-    getBookingRecommendations,
-    getVaccineRecommendations,
-    disableBookingRecommendation,
-    disableVaccineRecommendation,
+    findPetsByCriteriaAsync,
+    uploadImageAsync,
+    updateRecommendationAsync,
+    getBookingRecommendationsAsync,
+    getVaccineRecommendationsAsync,
+    disableBookingRecommendationAsync,
+    disableVaccineRecommendationAsync
 };

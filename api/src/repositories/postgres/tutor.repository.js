@@ -4,32 +4,32 @@ const petRepository = require('./pet.repository');
 const tutorFields = ['name', 'email', 'phone'];
 const tutorCrudRepository = crudRepository('tutor', 'tutor_id', tutorFields);
 
-const getBookingRecommendations = async (tutorId, organizationId) => {
-    const pets = await petRepository.find({ tutor_id: tutorId }, organizationId);
+const getBookingRecommendationsAsync = async (tutorId, organizationId) => {
+    const pets = await petRepository.findAsync({ tutor_id: tutorId }, organizationId);
     const recommendations = [];
 
     for (const pet of pets) {
-        const petRecommendations = await petRepository.getBookingRecommendations(pet.pet_id, organizationId);
+        const petRecommendations = await petRepository.getBookingRecommendationsAsync(pet.pet_id, organizationId);
         recommendations.push(...petRecommendations);
     }
 
     return recommendations;
 };
 
-const getVaccineRecommendations = async (tutorId, organizationId) => {
-    const pets = await petRepository.find({ tutor_id: tutorId }, organizationId);
+const getVaccineRecommendationsAsync = async (tutorId, organizationId) => {
+    const pets = await petRepository.findAsync({ tutor_id: tutorId }, organizationId);
     const recommendations = [];
 
     for (const pet of pets) {
-        const petRecommendations = await petRepository.getVaccineRecommendations(pet.pet_id, organizationId);
+        const petRecommendations = await petRepository.getVaccineRecommendationsAsync(pet.pet_id, organizationId);
         recommendations.push(...petRecommendations);
     }
 
     return recommendations;
 };
 
-const updateRecommendation = async (tutorId, ignore, organizationId) => {
-    const pets = await petRepository.find({ tutor_id: tutorId }, organizationId);
+const updateRecommendationAsync = async (tutorId, ignore, organizationId) => {
+    const pets = await petRepository.findAsync({ tutor_id: tutorId }, organizationId);
 
     if (!pets || pets.length === 0) {
         return null;
@@ -37,7 +37,7 @@ const updateRecommendation = async (tutorId, ignore, organizationId) => {
 
     const updatedPets = [];
     for (const pet of pets) {
-        const updatedPet = await petRepository.updateRecommendation(pet.pet_id, ignore, organizationId);
+        const updatedPet = await petRepository.updateRecommendationAsync(pet.pet_id, ignore, organizationId);
         updatedPets.push(updatedPet);
     }
     
@@ -46,7 +46,7 @@ const updateRecommendation = async (tutorId, ignore, organizationId) => {
 
 module.exports = {
     ...tutorCrudRepository,
-    getBookingRecommendations,
-    getVaccineRecommendations,
-    updateRecommendation
+    getBookingRecommendationsAsync,
+    getVaccineRecommendationsAsync,
+    updateRecommendationAsync
 };

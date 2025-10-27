@@ -3,7 +3,7 @@ const router = express.Router();
 
 const organizationController = require('../controllers/organization.controller');
 const { createOrganizationValidator } = require('../validators/organization.validator');
-const { authenticateApiKey } = require('../middleware/auth');
+const { authenticateApiKeyAsync } = require('../middleware/auth');
 
 /**
  * @swagger
@@ -114,7 +114,7 @@ const { authenticateApiKey } = require('../middleware/auth');
  *       500:
  *         description: Some server error
  */
-router.post('/', createOrganizationValidator, organizationController.create);
+router.post('/', createOrganizationValidator, organizationController.createAsync);
 
 /**
  * @swagger
@@ -132,7 +132,7 @@ router.post('/', createOrganizationValidator, organizationController.create);
  *       404:
  *         description: The organization was not found
  */
-router.get('/', authenticateApiKey, organizationController.findOne);
+router.get('/', authenticateApiKeyAsync, organizationController.findOneAsync);
 
 /**
  * @swagger
@@ -150,6 +150,6 @@ router.get('/', authenticateApiKey, organizationController.findOne);
  *       404:
  *         description: The organization was not found or already disabled
  */
-router.delete('/', authenticateApiKey, organizationController.disable);
+router.delete('/', authenticateApiKeyAsync, organizationController.disableAsync);
 
 module.exports = router;

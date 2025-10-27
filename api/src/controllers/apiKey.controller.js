@@ -2,21 +2,21 @@ const apiKeyRepository = require('../repositories/postgres/apiKey.repository');
 const catchAsync = require('../utils/catchAsync');
 const { statusCodes } = require('../config/general');
 
-const create = catchAsync(async (req, res) => {
-    const newApiKey = await apiKeyRepository.createApiKey(req.organization_id);
+const createAsync = catchAsync(async (req, res) => {
+    const newApiKey = await apiKeyRepository.createApiKeyAsync(req.organization_id);
     
     res.status(statusCodes.CREATED).json(newApiKey);
 });
 
-const findAll = catchAsync(async (req, res) => {
-    const apiKeys = await apiKeyRepository.getApiKeysByOrganizationId(req.organization_id);
+const findAllAsync = catchAsync(async (req, res) => {
+    const apiKeys = await apiKeyRepository.getApiKeysByOrganizationIdAsync(req.organization_id);
 
     res.status(statusCodes.OK).json(apiKeys);
 });
 
-const remove = catchAsync(async (req, res) => {
+const removeAsync = catchAsync(async (req, res) => {
     const { api_key } = req.params;
-    const deletedApiKey = await apiKeyRepository.deleteApiKey(req.organization_id, api_key);
+    const deletedApiKey = await apiKeyRepository.deleteApiKeyAsync(req.organization_id, api_key);
 
     if (!deletedApiKey) {
         return res.status(statusCodes.NOT_FOUND).json({ message: 'API key not found.' });
@@ -26,7 +26,7 @@ const remove = catchAsync(async (req, res) => {
 });
 
 module.exports = {
-    create,
-    findAll,
-    remove,
+    createAsync,
+    findAllAsync,
+    removeAsync
 };

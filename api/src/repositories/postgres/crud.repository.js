@@ -1,18 +1,11 @@
 const { pool } = require('../../config/database');
-
-const organizationTables = [
-    'tutor', 'pet', 'product', 'purchase', 'booking',
-    'vaccination_record', 'vaccine_recommendation', 'booking_recommendation'
-];
-
-const tableRelationships = {
-    pet: { joinTable: 'tutor', joinColumn: 'tutor_id' },
-    purchase: { joinTable: 'tutor', joinColumn: 'tutor_id' },
-    booking: { joinTable: 'pet', joinColumn: 'pet_id' },
-    vaccination_record: { joinTable: 'pet', joinColumn: 'pet_id' },
-    vaccine_recommendation: { joinTable: 'pet', joinColumn: 'pet_id' },
-    booking_recommendation: { joinTable: 'pet', joinColumn: 'pet_id' },
-};
+const { 
+    validateTableName, 
+    validateColumnName, 
+    validateFields,
+    validateValue 
+} = require('../../utils/sqlSanitizer');
+const { organizationTables, tableRelationships } = require('../../config/database');
 
 const applyOrganizationFilter = (query, params, tableName, organizationId) => {
     let newQuery = query;
@@ -21,28 +14,62 @@ const applyOrganizationFilter = (query, params, tableName, organizationId) => {
     if (organizationTables.includes(tableName) && organizationId) {
         const relationship = tableRelationships[tableName];
         if (relationship) {
-            const { joinTable, joinColumn } = relationship;
-            const joinAlias = `${tableName}_join`;
-            if (tableRelationships[joinTable]) {
-                const nestedRelationship = tableRelationships[joinTable];
-                const nestedJoinAlias = `${joinTable}_join`;
-                newQuery = newQuery.replace(
-                    `FROM ${tableName}`,
-                    `FROM ${tableName} 
-                     JOIN ${joinTable} ${joinAlias} ON ${tableName}.${joinColumn} = ${joinAlias}.${joinColumn}
-                     JOIN ${nestedRelationship.joinTable} ${nestedJoinAlias} ON ${joinAlias}.${nestedRelationship.joinColumn} = ${nestedJoinAlias}.${nestedRelationship.joinColumn}`
-                );
-                const whereClause = ` ${nestedJoinAlias}.organization_id = $${newParams.length + 1}`;
-                newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+            if (newQuery.trim().toUpperCase().startsWith('UPDATE')) {
+                let returningClause = '';
+                if (newQuery.toUpperCase().includes('RETURNING')) {
+                    const returningIndex = newQuery.toUpperCase().indexOf('RETURNING');
+                    returningClause = newQuery.substring(returningIndex);
+                    newQuery = newQuery.substring(0, returningIndex);
+                }
+
+                const fromTables = [];
+                const whereConditions = [];
+                let currentTable = tableName;
+                let currentRelationship = relationship;
+
+                while (currentRelationship) {
+                    const { joinTable, joinColumn } = currentRelationship;
+                    fromTables.push(joinTable);
+                    whereConditions.push(`${currentTable}.${joinColumn} = ${joinTable}.${joinColumn}`);
+                    
+                    currentTable = joinTable;
+                    currentRelationship = tableRelationships[joinTable];
+                }
+                
+                const parts = newQuery.split(' WHERE ');
+                const updateSetPart = parts[0];
+                const wherePart = parts[1];
+
+                const orgCondition = `${currentTable}.organization_id = $${newParams.length + 1}`;
                 newParams.push(organizationId);
-            } else {
-                newQuery = newQuery.replace(
-                    `FROM ${tableName}`,
-                    `FROM ${tableName} JOIN ${joinTable} ${joinAlias} ON ${tableName}.${joinColumn} = ${joinAlias}.${joinColumn}`
-                );
-                const whereClause = ` ${joinAlias}.organization_id = $${newParams.length + 1}`;
-                newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
-                newParams.push(organizationId);
+
+                whereConditions.push(orgCondition);
+
+                newQuery = `${updateSetPart} FROM ${fromTables.join(', ')} WHERE ${wherePart} AND ${whereConditions.join(' AND ')} ${returningClause}`;
+            } else { // SELECT logic
+                const { joinTable, joinColumn } = relationship;
+                const joinAlias = `${tableName}_join`;
+                if (tableRelationships[joinTable]) {
+                    const nestedRelationship = tableRelationships[joinTable];
+                    const nestedJoinAlias = `${joinTable}_join`;
+                    newQuery = newQuery.replace(
+                        `FROM ${tableName}`,
+                        `FROM ${tableName} 
+                         JOIN ${joinTable} ${joinAlias} ON ${tableName}.${joinColumn} = ${joinAlias}.${joinColumn}
+                         JOIN ${nestedRelationship.joinTable} ${nestedJoinAlias} ON ${joinAlias}.${nestedRelationship.joinColumn} = ${nestedJoinAlias}.${nestedRelationship.joinColumn}`
+                    );
+                    const whereClause = ` ${nestedJoinAlias}.organization_id = $${newParams.length + 1}`;
+                    newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+                    newParams.push(organizationId);
+                } else {
+                    newQuery = newQuery.replace(
+                        `FROM ${tableName}`,
+                        `FROM ${tableName} JOIN ${joinTable} ${joinAlias} ON ${tableName}.${joinColumn} = ${joinAlias}.${joinColumn}`
+                    );
+                    const whereClause = ` ${joinAlias}.organization_id = $${newParams.length + 1}`;
+                    newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+                    newParams.push(organizationId);
+                }
             }
         } else {
             const whereClause = ` ${tableName}.organization_id = $${newParams.length + 1}`;
@@ -55,12 +82,19 @@ const applyOrganizationFilter = (query, params, tableName, organizationId) => {
     return { query: newQuery, params: newParams };
 };
 
-const find = (tableName) => async (filters, organizationId) => {
+const findAsync = (tableName) => async (filters, organizationId) => {
+    validateTableName(tableName);
+    
     let query = `SELECT * FROM ${tableName}`;
     const params = [];
     
-    const filterKeys = Object.keys(filters);
+    const filterKeys = Object.keys(filters || {});
     if (filterKeys.length > 0) {
+        filterKeys.forEach(key => {
+            validateColumnName(key);
+            validateValue(filters[key]);
+        });
+        
         const whereClauses = filterKeys.map((key, i) => `${tableName}.${key} = $${i + 1}`);
         query += ` WHERE ${whereClauses.join(' AND ')}`;
         
@@ -73,14 +107,20 @@ const find = (tableName) => async (filters, organizationId) => {
     return result.rows;
 };
 
-const getById = (tableName, idField) => async (id, organizationId) => {
-    const rows = await find(tableName)({ [idField]: id }, organizationId);
+const getByIdAsync = (tableName, idField) => async (id, organizationId) => {
+    const rows = await findAsync(tableName)({ [idField]: id }, organizationId);
     return rows[0];
 };
 
-const create = (tableName, fields) => async (data, organizationId) => {
+const createAsync = (tableName, fields) => async (data, organizationId) => {
+    validateTableName(tableName);
+    validateFields(fields);
+    
     const allFields = [...fields];
     const dataWithOrg = { ...data };
+    
+    // Validate all values in the data object
+    Object.values(data || {}).forEach(value => validateValue(value));
 
     if (organizationTables.includes(tableName) && organizationId && !tableRelationships[tableName]) {
         if (!allFields.includes('organization_id')) {
@@ -100,21 +140,27 @@ const create = (tableName, fields) => async (data, organizationId) => {
     return result.rows[0];
 };
 
-const update = (tableName, idField, fields) => async (id, data, organizationId) => {
-    const setClause = fields.map((field, i) => `${field} = $${i + 2}`).join(', ');
-    const values = fields.map(field => data[field]);
+const updateAsync = (tableName, idField, fields) => async (id, data, organizationId, client) => {
+    const dataFields = Object.keys(data).filter(field => fields.includes(field) && data[field] !== undefined);
+    if (dataFields.length === 0) {
+        return null;
+    }
+
+    const setClause = dataFields.map((field, i) => `${field} = $${i + 2}`).join(', ');
+    const values = dataFields.map(field => data[field]);
     
-    let query = `UPDATE ${tableName} SET ${setClause} WHERE ${idField} = $1`;
+    let query = `UPDATE ${tableName} SET ${setClause} WHERE ${idField} = $1 RETURNING *`;
     let params = [id, ...values];
 
     const { query: filteredQuery, params: finalParams } = applyOrganizationFilter(query, params, tableName, organizationId);
     
-    const result = await pool.query(filteredQuery, finalParams);
+    const queryRunner = client || pool;
+    const result = await queryRunner.query(filteredQuery, finalParams);
 
     return result.rows[0];
 };
 
-const remove = (tableName, idField) => async (id, organizationId) => {
+const removeAsync = (tableName, idField) => async (id, organizationId) => {
     let query = `UPDATE ${tableName} SET nenabled = FALSE WHERE ${idField} = $1`;
     let params = [id];
 
@@ -125,14 +171,14 @@ const remove = (tableName, idField) => async (id, organizationId) => {
     return result.rows[0];
 };
 
-const createWithList = (tableName, fields) => async (items, organizationId) => {
+const createWithListAsync = (tableName, fields) => async (items, organizationId) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const createdItems = [];
 
         for (const item of items) {
-            const createdItem = await create(tableName, fields)(item, organizationId);
+            const createdItem = await createAsync(tableName, fields)(item, organizationId);
             createdItems.push(createdItem);
         }
 
@@ -147,14 +193,14 @@ const createWithList = (tableName, fields) => async (items, organizationId) => {
     }
 };
 
-const updateWithList = (tableName, idField, fields) => async (items, organizationId) => {
+const updateWithListAsync = (tableName, idField, fields) => async (items, organizationId) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const updatedItems = [];
 
         for (const item of items) {
-            const updatedItem = await update(tableName, idField, fields)(item[idField], item, organizationId);
+            const updatedItem = await updateAsync(tableName, idField, fields)(item[idField], item, organizationId);
             updatedItems.push(updatedItem);
         }
 
@@ -169,14 +215,14 @@ const updateWithList = (tableName, idField, fields) => async (items, organizatio
     }
 };
 
-const deleteWithList = (tableName, idField) => async (ids, organizationId) => {
+const deleteWithListAsync = (tableName, idField) => async (ids, organizationId) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const deletedItems = [];
 
         for (const id of ids) {
-            const deletedItem = await remove(tableName, idField)(id, organizationId);
+            const deletedItem = await removeAsync(tableName, idField)(id, organizationId);
             deletedItems.push(deletedItem);
         }
 
@@ -193,12 +239,12 @@ const deleteWithList = (tableName, idField) => async (ids, organizationId) => {
 
 
 module.exports = (tableName, idField, fields) => ({
-    find: find(tableName),
-    getById: getById(tableName, idField),
-    create: create(tableName, fields),
-    update: update(tableName, idField, fields),
-    remove: remove(tableName, idField),
-    createWithList: createWithList(tableName, fields),
-    updateWithList: updateWithList(tableName, idField, fields),
-    deleteWithList: deleteWithList(tableName, idField),
+    findAsync: findAsync(tableName),
+    getByIdAsync: getByIdAsync(tableName, idField),
+    createAsync: createAsync(tableName, fields),
+    updateAsync: updateAsync(tableName, idField, fields),
+    removeAsync: removeAsync(tableName, idField),
+    createWithListAsync: createWithListAsync(tableName, fields),
+    updateWithListAsync: updateWithListAsync(tableName, idField, fields),
+    deleteWithListAsync: deleteWithListAsync(tableName, idField),
 });

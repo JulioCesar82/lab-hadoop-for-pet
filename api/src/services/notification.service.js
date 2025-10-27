@@ -4,7 +4,7 @@ const path = require('path');
 const emailProvider = require('../providers/email');
 const { templatePath: emailTemplatePath, subject: emailSubject } = require('../config/email');
 
-const sendEmail = async (tutor, recommendations) => {
+const sendEmailAsync = async (tutor, recommendations) => {
     try {
         const templatePath = path.join(__dirname, '..', emailTemplatePath);
         const template = fs.readFileSync(templatePath, 'utf-8');
@@ -36,12 +36,12 @@ const sendPushNotification = (tutor, recommendations) => {
     // TODO: Lógica de envio de Push Notification aqui...
 };
 
-const notifyTutor = async (tutor, recommendations) => {
-    await sendEmail(tutor, recommendations);
+const notifyTutorAsync = async (tutor, recommendations) => {
+    await sendEmailAsync(tutor, recommendations);
     sendSMS(tutor, recommendations);
     sendPushNotification(tutor, recommendations);
 };
 
 module.exports = {
-    notifyTutor,
+    notifyTutorAsync
 };

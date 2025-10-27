@@ -1,11 +1,7 @@
 const inMemoryDb = {};
+const { organizationTables } = require('../../config/database');
 
-const organizationTables = [
-    'tutor', 'pet', 'product', 'purchase', 'booking',
-    'vaccination_record', 'vaccine_recommendation', 'booking_recommendation'
-];
-
-const find = (tableName) => async (filters, organizationId) => {
+const findAsync = (tableName) => async (filters, organizationId) => {
     if (!inMemoryDb[tableName]) {
         return [];
     }
@@ -21,12 +17,12 @@ const find = (tableName) => async (filters, organizationId) => {
     });
 };
 
-const getById = (tableName, idField) => async (id, organizationId) => {
-    const items = await find(tableName)({ [idField]: id }, organizationId);
+const getByIdAsync = (tableName, idField) => async (id, organizationId) => {
+    const items = await findAsync(tableName)({ [idField]: id }, organizationId);
     return items[0];
 };
 
-const create = (tableName, fields) => async (data, organizationId) => {
+const createAsync = (tableName, fields) => async (data, organizationId) => {
     if (!inMemoryDb[tableName]) {
         inMemoryDb[tableName] = [];
     }
@@ -41,8 +37,8 @@ const create = (tableName, fields) => async (data, organizationId) => {
     return newItem;
 };
 
-const update = (tableName, idField, fields) => async (id, data, organizationId) => {
-    const items = await find(tableName)({ [idField]: id }, organizationId);
+const updateAsync = (tableName, idField, fields) => async (id, data, organizationId) => {
+    const items = await findAsync(tableName)({ [idField]: id }, organizationId);
 
     if (items.length === 0) {
         return null;
@@ -58,8 +54,8 @@ const update = (tableName, idField, fields) => async (id, data, organizationId) 
     return itemToUpdate;
 };
 
-const remove = (tableName, idField) => async (id, organizationId) => {
-    const items = await find(tableName)({ [idField]: id }, organizationId);
+const removeAsync = (tableName, idField) => async (id, organizationId) => {
+    const items = await findAsync(tableName)({ [idField]: id }, organizationId);
 
     if (items.length === 0) {
         return null;
@@ -71,10 +67,10 @@ const remove = (tableName, idField) => async (id, organizationId) => {
     return itemToRemove;
 };
 
-const createWithList = (tableName, fields) => async (items, organizationId) => {
+const createWithListAsync = (tableName, fields) => async (items, organizationId) => {
     const createdItems = [];
     for (const item of items) {
-        const createdItem = await create(tableName, fields)(item, organizationId);
+        const createdItem = await createAsync(tableName, fields)(item, organizationId);
         createdItems.push(createdItem);
     }
 
@@ -85,18 +81,18 @@ const updateWithList = (tableName, idField, fields) => async (items, organizatio
     const updatedItems = [];
 
     for (const item of items) {
-        const updatedItem = await update(tableName, idField, fields)(item[idField], item, organizationId);
+        const updatedItem = await updateAsync(tableName, idField, fields)(item[idField], item, organizationId);
         updatedItems.push(updatedItem);
     }
 
     return updatedItems;
 };
 
-const deleteWithList = (tableName, idField) => async (ids, organizationId) => {
+const deleteWithListAsync = (tableName, idField) => async (ids, organizationId) => {
     const deletedItems = [];
     
     for (const id of ids) {
-        const deletedItem = await remove(tableName, idField)(id, organizationId);
+        const deletedItem = await removeAsync(tableName, idField)(id, organizationId);
         deletedItems.push(deletedItem);
     }
     
@@ -104,12 +100,12 @@ const deleteWithList = (tableName, idField) => async (ids, organizationId) => {
 };
 
 module.exports = (tableName, idField, fields) => ({
-    find: find(tableName),
-    getById: getById(tableName, idField),
-    create: create(tableName, fields),
-    update: update(tableName, idField, fields),
-    remove: remove(tableName, idField),
-    createWithList: createWithList(tableName, fields),
-    updateWithList: updateWithList(tableName, idField, fields),
-    deleteWithList: deleteWithList(tableName, idField),
+    findAsync: findAsync(tableName),
+    getByIdAsync: getByIdAsync(tableName, idField),
+    createAsync: createAsync(tableName, fields),
+    updateAsync: updateAsync(tableName, idField, fields),
+    removeAsync: removeAsync(tableName, idField),
+    createWithListAsync: createWithListAsync(tableName, fields),
+    updateWithListAsync: updateWithList(tableName, idField, fields),
+    deleteWithListAsync: deleteWithListAsync(tableName, idField),
 });

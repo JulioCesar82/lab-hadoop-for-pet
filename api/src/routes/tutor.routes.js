@@ -3,8 +3,9 @@ const router = express.Router();
 
 const tutorController = require('../controllers/tutor.controller');
 const { validateTutor } = require('../validators/tutor.validator');
-const { authenticateApiKey } = require('../middleware/auth');
-router.use(authenticateApiKey);
+const { authenticateApiKeyAsync } = require('../middleware/auth');
+
+router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
@@ -62,7 +63,7 @@ router.use(authenticateApiKey);
  *               items:
  *                 $ref: '#/components/schemas/Tutor'
  */
-router.get('/', tutorController.getAll);
+router.get('/', tutorController.getAllAsync);
 
 /**
  * @swagger
@@ -87,7 +88,7 @@ router.get('/', tutorController.getAll);
  *       404:
  *         description: The tutor was not found
  */
-router.get('/:id', tutorController.getById);
+router.get('/:id', tutorController.getByIdAsync);
 
 /**
  * @swagger
@@ -111,7 +112,7 @@ router.get('/:id', tutorController.getById);
  *       500:
  *         description: Some server error
  */
-router.post('/', validateTutor, tutorController.create);
+router.post('/', validateTutor, tutorController.createAsync);
 
 /**
  * @swagger
@@ -144,7 +145,7 @@ router.post('/', validateTutor, tutorController.create);
  *       500:
  *         description: Some error happened
  */
-router.put('/:id', validateTutor, tutorController.update);
+router.put('/:id', validateTutor, tutorController.updateAsync);
 
 /**
  * @swagger
@@ -165,7 +166,7 @@ router.put('/:id', validateTutor, tutorController.update);
  *       404:
  *         description: The tutor was not found
  */
-router.delete('/:id', tutorController.remove);
+router.delete('/:id', tutorController.removeAsync);
 
 /**
  * @swagger
@@ -186,7 +187,7 @@ router.delete('/:id', tutorController.remove);
  *                   type: string
  *                   example: "Processo de notificação para todos os tutores foi iniciado."
  */
-router.post('/notify-all', tutorController.notifyAllTutors);
+router.post('/notify-all', tutorController.notifyAllTutorsAsync);
 
 /**
  * @swagger
@@ -213,7 +214,7 @@ router.post('/notify-all', tutorController.notifyAllTutors);
  *       400:
  *         description: Bad request
  */
-router.get('/:id/booking-recommendations', tutorController.getBookingRecommendations);
+router.get('/:id/booking-recommendations', tutorController.getBookingRecommendationsAsync);
 
 /**
  * @swagger
@@ -240,7 +241,7 @@ router.get('/:id/booking-recommendations', tutorController.getBookingRecommendat
  *       400:
  *         description: Bad request
  */
-router.get('/:id/vaccine-recommendations', tutorController.getVaccineRecommendations);
+router.get('/:id/vaccine-recommendations', tutorController.getVaccineRecommendationsAsync);
 
 /**
  * @swagger
@@ -272,6 +273,6 @@ router.get('/:id/vaccine-recommendations', tutorController.getVaccineRecommendat
  *       400:
  *         description: Bad request
  */
-router.post('/:id/update-recommendation', tutorController.updateRecommendation);
+router.post('/:id/update-recommendation', tutorController.updateRecommendationAsync);
 
 module.exports = router;

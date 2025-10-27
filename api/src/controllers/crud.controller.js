@@ -1,15 +1,15 @@
 const catchAsync = require('../utils/catchAsync');
 const { statusCodes } = require('../config/general');
 
-const getAll = (repository) => catchAsync(async (req, res) => {
-    const items = await repository.find(req.organization_id);
+const getAllAsync = (repository) => catchAsync(async (req, res) => {
+    const items = await repository.findAsync(req.organization_id);
 
     res.status(statusCodes.OK).send(items);
 });
 
-const getById = (repository) => catchAsync(async (req, res) => {
+const getByIdAsync = (repository) => catchAsync(async (req, res) => {
     const { id } = req.params;
-    const item = await repository.getById(id, req.organization_id);
+    const item = await repository.getByIdAsync(id, req.organization_id);
 
     if (item) {
         res.status(statusCodes.OK).send(item);
@@ -18,15 +18,15 @@ const getById = (repository) => catchAsync(async (req, res) => {
     }
 });
 
-const create = (repository) => catchAsync(async (req, res) => {
-    const item = await repository.create(req.body, req.organization_id);
+const createAsync = (repository) => catchAsync(async (req, res) => {
+    const item = await repository.createAsync(req.body, req.organization_id);
 
     res.status(statusCodes.CREATED).send(item);
 });
 
-const update = (repository) => catchAsync(async (req, res) => {
+const updateAsync = (repository) => catchAsync(async (req, res) => {
     const { id } = req.params;
-    const item = await repository.update(id, req.body, req.organization_id);
+    const item = await repository.updateAsync(id, req.body, req.organization_id);
 
     if (item) {
         res.status(statusCodes.OK).send(item);
@@ -35,9 +35,9 @@ const update = (repository) => catchAsync(async (req, res) => {
     }
 });
 
-const remove = (repository) => catchAsync(async (req, res) => {
+const removeAsync = (repository) => catchAsync(async (req, res) => {
     const { id } = req.params;
-    const item = await repository.remove(id, req.organization_id);
+    const item = await repository.removeAsync(id, req.organization_id);
 
     if (item) {
         res.status(statusCodes.OK).send({ message: 'Item deleted successfully' });
@@ -46,31 +46,31 @@ const remove = (repository) => catchAsync(async (req, res) => {
     }
 });
 
-const createWithList = (repository) => catchAsync(async (req, res) => {
-    const items = await repository.createWithList(req.body, req.organization_id);
+const createWithListAsync = (repository) => catchAsync(async (req, res) => {
+    const items = await repository.createWithListAsync(req.body, req.organization_id);
 
     res.status(statusCodes.CREATED).send(items);
 });
 
-const updateWithList = (repository) => catchAsync(async (req, res) => {
-    const items = await repository.updateWithList(req.body, req.organization_id);
+const updateWithListAsync = (repository) => catchAsync(async (req, res) => {
+    const items = await repository.updateWithListAsync(req.body, req.organization_id);
 
     res.status(statusCodes.OK).send(items);
 });
 
-const deleteWithList = (repository) => catchAsync(async (req, res) => {
-    const items = await repository.deleteWithList(req.body, req.organization_id);
+const deleteWithListAsync = (repository) => catchAsync(async (req, res) => {
+    const items = await repository.deleteWithListAsync(req.body, req.organization_id);
     
     res.status(statusCodes.OK).send({ message: 'Items deleted successfully', deletedItems: items });
 });
 
 module.exports = (repository) => ({
-    getAll: getAll(repository),
-    getById: getById(repository),
-    create: create(repository),
-    update: update(repository),
-    remove: remove(repository),
-    createWithList: createWithList(repository),
-    updateWithList: updateWithList(repository),
-    deleteWithList: deleteWithList(repository),
+    getAllAsync: getAllAsync(repository),
+    getByIdAsync: getByIdAsync(repository),
+    createAsync: createAsync(repository),
+    updateAsync: updateAsync(repository),
+    removeAsync: removeAsync(repository),
+    createWithListAsync: createWithListAsync(repository),
+    updateWithListAsync: updateWithListAsync(repository),
+    deleteWithListAsync: deleteWithListAsync(repository),
 });
