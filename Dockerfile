@@ -20,12 +20,16 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     openjdk-17-jdk \
     python3 \
+    python3-pip \
     curl \
     wget \
     unzip \
     gnupg2 \
     lsb-release && \
     rm -rf /var/lib/apt/lists/*
+
+# Instalar dependências Python
+RUN pip3 install python-dateutil
 
 # Adicionar o repositório PostgreSQL (This part should now run correctly)
 RUN apt-get update && \
