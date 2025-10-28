@@ -13,8 +13,8 @@ DB_PORT=$5
 # Vars
 INPUT_DIR=/petshop/input_booking_reference
 OUTPUT_DIR=/petshop/output_booking_reference
-MAPPER_PATH=labs/mapreduce-jobs/booking-recommendation-generate-reference-python/mapper.py
-REDUCER_PATH=labs/mapreduce-jobs/booking-recommendation-generate-reference-python/reducer.py
+MAPPER_PATH=/api-resources/booking-recommendation-generate-reference-python/mapper.py
+REDUCER_PATH=/api-resources/booking-recommendation-generate-reference-python/reducer.py
 export PGPASSWORD=$DB_PASSWORD
 
 echo "Starting booking reference pipeline..."

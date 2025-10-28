@@ -2,11 +2,19 @@ const express = require('express');
 const router = express.Router();
 
 const tutorController = require('../controllers/tutor.controller');
-const { validateTutor } = require('../validators/tutor.validator');
+const { validateTutor, validateTutorList, validateDeleteTutorList } = require('../validators/tutor.validator');
 const { validatePagination } = require('../validators/pagination.validator');
 const { authenticateApiKeyAsync } = require('../middleware/auth');
 
 router.use(authenticateApiKeyAsync);
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Tutors
+ *   description: The tutors managing API
+ */
 
 /**
  * @swagger
@@ -31,21 +39,11 @@ router.use(authenticateApiKeyAsync);
  *         phone:
  *           type: string
  *           description: The phone number of the tutor.
- *         address:
- *           type: string
- *           description: The address of the tutor.
  *       example:
  *         name: "João da Silva"
  *         email: "joao.silva@example.com"
  *         phone: "11999999999"
- *         address: "Rua das Flores, 123"
- */
-
-/**
- * @swagger
- * tags:
- *   name: Tutors
- *   description: The tutors managing API
+ *
  */
 
 /**
@@ -73,7 +71,37 @@ router.use(authenticateApiKeyAsync);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PaginatedTutors'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/PaginatedResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       items:
+ *                         $ref: '#/components/schemas/Tutor'
+ *       400:
+ *         description: Erro de validação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso proibido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', validatePagination, tutorController.getAllAsync);
 
@@ -125,6 +153,91 @@ router.get('/:id', tutorController.getByIdAsync);
  *         description: Some server error
  */
 router.post('/', validateTutor, tutorController.createAsync);
+
+/**
+ * @swagger
+ * /tutor/createWithList:
+ *   post:
+ *     summary: Creates list of tutors with given input array
+ *     tags: [Tutors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/Tutor'
+ *     responses:
+ *       201:
+ *         description: The list of tutors was successfully created.
+ *       500:
+ *         description: Some server error
+ */
+router.post('/createWithList', validateTutorList, tutorController.createWithListAsync);
+
+/**
+ * @swagger
+ * /tutor/updateWithList:
+ *   put:
+ *     summary: Updates list of tutors with given input array
+ *     tags: [Tutors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Tutor'
+ *                 - type: object
+ *                   required: ['id']
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: The ID of the tutor to update
+ *           example:
+ *             - id: 1
+ *               name: "João da Silva"
+ *               email: "joao.silva@example.com"
+ *               phone: "11999999999"
+ *     responses:
+ *       200:
+ *         description: The list of tutors was successfully updated.
+ *       404:
+ *         description: One or more tutors were not found
+ *       500:
+ *         description: Some server error
+ */
+router.put('/updateWithList', validateTutorList, tutorController.updateWithListAsync);
+
+/**
+ * @swagger
+ * /tutor/deleteWithList:
+ *   delete:
+ *     summary: Deletes a list of tutors
+ *     tags: [Tutors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ids:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *             example:
+ *               ids: [1, 2, 3]
+ *     responses:
+ *       204:
+ *         description: The tutors were successfully deleted.
+ *       500:
+ *         description: Some server error
+ */
+router.delete('/deleteWithList', validateDeleteTutorList, tutorController.deleteWithListAsync);
 
 /**
  * @swagger

@@ -13,8 +13,8 @@ DB_PORT=$5
 # Vars
 INPUT_DIR=/petshop/input_ltv
 OUTPUT_DIR=/petshop/output_ltv
-MAPPER_PATH=labs/mapreduce-jobs/ltv-by-pet-profile-python/mapper.py
-REDUCER_PATH=labs/mapreduce-jobs/ltv-by-pet-profile-python/reducer.py
+MAPPER_PATH=/api-resources/ltv-by-pet-profile-python/mapper.py
+REDUCER_PATH=/api-resources/ltv-by-pet-profile-python/reducer.py
 export PGPASSWORD=$DB_PASSWORD
 
 echo "Starting LTV by pet profile pipeline..."

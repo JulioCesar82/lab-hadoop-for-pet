@@ -10,6 +10,13 @@ router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
+ * tags:
+ *   name: ApiKeys
+ *   description: The API keys managing API
+ */
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     ApiKey:
@@ -26,13 +33,6 @@ router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
- * tags:
- *   name: ApiKeys
- *   description: The API keys managing API
- */
-
-/**
- * @swagger
  * /apikeys:
  *   post:
  *     summary: Create a new API key for the authenticated organization
@@ -44,8 +44,30 @@ router.use(authenticateApiKeyAsync);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiKey'
+ *       400:
+ *         description: Erro de validação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso proibido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Some server error
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/', apiKeyController.createAsync);
 
@@ -74,25 +96,37 @@ router.post('/', apiKeyController.createAsync);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/ApiKey'
- *                 pagination:
- *                   type: object
+ *               allOf:
+ *                 - $ref: '#/components/schemas/PaginatedResponse'
+ *                 - type: object
  *                   properties:
- *                     totalItems:
- *                       type: integer
- *                     totalPages:
- *                       type: integer
- *                     currentPage:
- *                       type: integer
- *                     pageSize:
- *                       type: integer
+ *                     data:
+ *                       items:
+ *                         $ref: '#/components/schemas/ApiKey'
+ *       400:
+ *         description: Erro de validação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso proibido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Some server error
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', validatePagination, apiKeyController.findAllAsync);
 

@@ -11,6 +11,13 @@ router.use(authenticateApiKeyAsync);
 
 /**
  * @swagger
+ * tags:
+ *   name: Pets
+ *   description: The pets managing API
+ */
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     Pet:
@@ -49,13 +56,7 @@ router.use(authenticateApiKeyAsync);
  *         fur_type: "Curto"
  *         birth_date: "2022-01-15"
  *         tutor_id: 1
- */
-
-/**
- * @swagger
- * tags:
- *   name: Pets
- *   description: The pets managing API
+ *
  */
 
 // POST (Creates list of pets with given input array): /pet/createWithList
@@ -76,8 +77,30 @@ router.use(authenticateApiKeyAsync);
  *     responses:
  *       201:
  *         description: The list of pets was successfully created.
+ *       400:
+ *         description: Erro de validação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Não autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Acesso proibido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
- *         description: Some server error
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/createWithList', validatePetList, petController.createWithListAsync);
 
@@ -187,10 +210,27 @@ router.put('/:id', validatePet, petController.updateAsync);
  *           schema:
  *             type: array
  *             items:
- *               $ref: '#/components/schemas/Pet'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Pet'
+ *                 - type: object
+ *                   required: ['id']
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: The ID of the pet to update
+ *           example:
+ *             - id: 1
+ *               name: "Bolinha"
+ *               species: "Cão"
+ *               animal_type: "Pug"
+ *               fur_type: "Curto"
+ *               birth_date: "2022-01-15"
+ *               tutor_id: 1
  *     responses:
  *       200:
  *         description: The list of pets was successfully updated.
+ *       404:
+ *         description: One or more pets were not found
  *       500:
  *         description: Some server error
  */
@@ -318,7 +358,13 @@ router.get('/:id', petController.getByIdAsync);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/PaginatedPets'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/PaginatedResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       items:
+ *                         $ref: '#/components/schemas/Pet'
  *       500:
  *         description: Some server error
  */

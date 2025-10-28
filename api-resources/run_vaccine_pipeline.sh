@@ -13,8 +13,8 @@ DB_PORT=$5
 # Vars
 INPUT_DIR=/petshop/input_vaccine_recommendation
 OUTPUT_DIR=/petshop/output_vaccine_recommendation
-MAPPER_PATH=labs/mapreduce-jobs/vaccine-recommendation-python/mapper.py
-REDUCER_PATH=labs/mapreduce-jobs/vaccine-recommendation-python/reducer.py
+MAPPER_PATH=/api-resources/vaccine-recommendation-python/mapper.py
+REDUCER_PATH=/api-resources/vaccine-recommendation-python/reducer.py
 export PGPASSWORD=$DB_PASSWORD
 
 echo "Starting vaccine recommendation pipeline..."

@@ -73,7 +73,19 @@ const applyOrganizationFilter = (query, params, tableName, organizationId) => {
             }
         } else {
             const whereClause = ` ${tableName}.organization_id = $${newParams.length + 1}`;
-            newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+            const isUpdateWithReturning = newQuery.trim().toUpperCase().startsWith('UPDATE') && newQuery.toUpperCase().includes('RETURNING');
+
+            if (isUpdateWithReturning) {
+                const returningIndex = newQuery.toUpperCase().indexOf('RETURNING');
+                const queryBeforeReturning = newQuery.substring(0, returningIndex);
+                const returningClause = newQuery.substring(returningIndex);
+
+                newQuery = queryBeforeReturning.trim();
+                newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+                newQuery += ` ${returningClause}`;
+            } else {
+                newQuery += newQuery.toUpperCase().includes(' WHERE ') ? ` AND ${whereClause}` : ` WHERE ${whereClause}`;
+            }
             
             newParams.push(organizationId);
         }

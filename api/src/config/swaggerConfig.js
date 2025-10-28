@@ -20,6 +20,51 @@ const options = {
       },
     ],
     components: {
+      schemas: {
+        PaginatedResponse: {
+          type: 'object',
+          properties: {
+            data: {
+              type: 'array',
+              description: 'Array of items'
+            },
+            pagination: {
+              type: 'object',
+              properties: {
+                page: {
+                  type: 'integer',
+                  description: 'The current page number'
+                },
+                pageSize: {
+                  type: 'integer',
+                  description: 'Number of items per page'
+                },
+                total: {
+                  type: 'integer',
+                  description: 'Total number of items'
+                }
+              }
+            }
+          }
+        },
+        Error: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              description: 'Mensagem de erro'
+            },
+            statusCode: {
+              type: 'integer',
+              description: 'Tipo do erro'
+            }
+          },
+          example: {
+            message: 'Recurso não encontrado',
+            statusCode: 500
+          }
+        }
+      },
       securitySchemes: {
         ApiKeyAuth: {
           type: 'apiKey',

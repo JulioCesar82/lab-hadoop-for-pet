@@ -7,6 +7,13 @@ const { authenticateApiKeyAsync } = require('../middleware/auth');
 
 /**
  * @swagger
+ * tags:
+ *   name: Organizations
+ *   description: The organizations managing API
+ */
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     Organization:
@@ -39,12 +46,6 @@ const { authenticateApiKeyAsync } = require('../middleware/auth');
  *         identification_code: "12345678000199"
  */
 
-/**
- * @swagger
- * tags:
- *   name: Organizations
- *   description: The organizations managing API
- */
 
 /**
  * @swagger
