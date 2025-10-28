@@ -19,6 +19,7 @@ COPY ./api-resources /api-resources
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     openjdk-17-jdk \
+    python3 \
     curl \
     wget \
     unzip \
