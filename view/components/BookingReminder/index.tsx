@@ -32,13 +32,15 @@ export const BookingReminder: React.FC<BookingReminderProps> = ({
         </button>
         
         <div className="reminder-content">
-          <div className="pet-icon">
-            <i className="fas fa-dog"></i>
-          </div>
-          <div className="reminder-text">
-            <h3>Olá Marcelo, temos uma sugestão para você!</h3>
-            <p>O Max (Golden) está próximo da data ideal para um Banho e Tosa!</p>
-            <p>Sugerimos agendar entre 13/04 e 27/05.</p>
+          <div className="reminder-main-content">
+            <div className="pet-icon">
+              <i className="fas fa-dog"></i>
+            </div>
+            <div className="reminder-text">
+              <h3>Olá Marcelo, temos uma sugestão para você!</h3>
+              <p>O Max (Golden) está próximo da data ideal para um Banho e Tosa!</p>
+              <p>Sugerimos agendar entre 13/04 e 27/05.</p>
+            </div>
           </div>
           <div className="reminder-actions">
             <button 

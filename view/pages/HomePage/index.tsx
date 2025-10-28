@@ -2,14 +2,6 @@ import React from "react";
 import { Footer } from "../../components/Footer";
 import { Header } from "../../components/Header";
 import { BookingReminder } from "../../components/BookingReminder";
-import { 
-  carrosel,
-  product01,
-  product02,
-  product03,
-  product04,
-  product05 
-} from "../../src/assets/images";
 import "./styles.css";
 
 export const HomePage = () => {
@@ -29,24 +21,24 @@ export const HomePage = () => {
       id: 1,
       title: "15% OFF no pacote com 4 Banhos",
       description: "Aproveite esta promoção por tempo limitado!",
-      image: carrosel,
+      image: 'banner-01.png',
       buttonText: "Compre agora",
     },
     {
       id: 2,
       title: "60% OFF em produtos selecionados",
       description: "Ofertas até o fim do mês",
-      image: carrosel,
+      image: 'banner-02.png',
       buttonText: "Ver ofertas",
     }
   ];
 
   const recommendations = [
-    { id: 1, image: product01, name: "Ração Premium", price: 89.90 },
-    { id: 2, image: product02, name: "Shampoo Pet", price: 29.90 },
-    { id: 3, image: product03, name: "Brinquedo Interativo", price: 45.90 },
-    { id: 4, image: product04, name: "Coleira Ajustável", price: 34.90 },
-    { id: 5, image: product05, name: "Petisco Natural", price: 19.90 },
+    { id: 1, image: 'produto-01.png', name: "Ração Premium", price: 89.90 },
+    { id: 2, image: 'produto-02.png', name: "Shampoo Pet", price: 29.90 },
+    { id: 3, image: 'produto-03.png', name: "Brinquedo Interativo", price: 45.90 },
+    { id: 4, image: 'produto-04.png', name: "Coleira Ajustável", price: 34.90 },
+    { id: 5, image: 'produto-05.png', name: "Petisco Natural", price: 19.90 },
   ];
 
   return (

@@ -88,6 +88,71 @@
   overflow-y: auto;
 }
 
+.pet-registration-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-row {
+  margin-bottom: 1.5rem;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-row input[type="text"],
+.form-row input[type="date"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+}
+
+.radio-label i {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.photo-upload-button {
+  background: #f5f5f5;
+  border: 1px solid #E5E5E5;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.photo-upload-button:hover {
+  background: #e8e8e8;
+  color: #333;
+}
+
 .booking-flow-footer {
   padding: 1.5rem 2rem;
   border-top: 1px solid #E5E5E5;

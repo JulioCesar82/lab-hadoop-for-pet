@@ -2,8 +2,6 @@
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  min-height: 1980px;
-  min-width: 1980px;
   overflow: hidden;
   width: 100%;
 }

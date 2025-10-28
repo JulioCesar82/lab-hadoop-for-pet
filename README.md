@@ -125,6 +125,7 @@ $env:DB_PORT="5432"
 $env:DB_USER="meu_usuario"
 $env:DB_PASSWORD="minha_senha"
 $env:DB_NAME="meu_banco"
+$env:DB_SSLMODE=false
 
 # No Mac/Linux
 export DB_HOST="localhost"
@@ -132,6 +133,7 @@ export DB_PORT="5432"
 export DB_USER="meu_usuario"
 export DB_PASSWORD="minha_senha"
 export DB_NAME="meu_banco"
+export DB_SSLMODE=false
 ```
 
 Inicie a aplicação:
@@ -151,7 +153,31 @@ Localmente via Docker:
 
 ```bash
 docker build -t api-pets -f Dockerfile .
-docker run -d -p 3000:3000 --name my-api-pets api-pet
+docker run -d -p 3000:3000 --name my-api-pets api-pets \
+  -e RESOURCES_PATH='/api-resources' \
+  -e API_PORT=3000 \
+
+  -e DB_HOST='localhost' \
+  -e DB_PORT='5432' \
+  -e DB_USER='meu_usuario' \
+  -e DB_PASSWORD='minha_senha' \
+  -e DB_NAME='meu_banco' \
+  -e DB_SSLMODE='false' \
+
+  -e CLOUDINARY_CLOUD_NAME='' \
+  -e CLOUDINARY_API_KEY='' \
+  -e CLOUDINARY_API_SECRET='' \
+  -e CLOUDINARY_UPLOAD_FOLDER='pet-images' \
+  -e CLOUDINARY_UPLOAD_FORMAT='png'
+
+  -e EMAIL_HOST='smtp.gmail.com' \
+  -e EMAIL_PORT='465' \
+  -e EMAIL_USER='' \
+  -e EMAIL_PASS='' \
+  -e EMAIL_FROM='Petshop Notificações' \
+  -e EMAIL_SECURE='true' \
+  -e EMAIL_SUBJECT='Novas Recomendações de Serviços para seu Pet' \
+  -e EMAIL_TEMPLATE_PATH='src/templates/email-template.html'
 ```
 
 ---

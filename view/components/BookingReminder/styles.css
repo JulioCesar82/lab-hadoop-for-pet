@@ -24,7 +24,7 @@
 
 .close-button {
   position: absolute;
-  top: 1rem;
+  top: 0;
   right: 1rem;
   background: none;
   border: none;
@@ -45,9 +45,15 @@
   gap: 2rem;
 }
 
+.reminder-main-content {
+  display: flex;
+  gap: 1.5rem;
+}
+
 .pet-icon {
   font-size: 3rem;
   color: #FF6B00;
+  margin: auto;
 }
 
 .reminder-text {
@@ -116,4 +122,33 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+
+
+/* Small devices (landscape phones, 576px and up) */
+@media (max-width: 576px) { 
+  
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 768px) { 
+  .reminder-content {
+    flex-direction: column;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (max-width: 992px) { 
+  
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (max-width: 1200px) { 
+  
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (max-width: 1400px) { 
+  
 }
