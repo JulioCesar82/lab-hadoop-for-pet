@@ -17,23 +17,27 @@ def process_pet_data(pet_id, data):
     all_vaccines = []
 
     for item in data:
-        fields = item.split(',')
-        (s, bd, vaccine_ref_id, vaccine_name, desc, target_species, first_dose, booster, mandatory, app_date) = fields
-        
-        if not species: species = s
-        if not birth_date_str: birth_date_str = bd
+        try:
+            fields = item.split(',')
+            (s, bd, vaccine_ref_id, vaccine_name, desc, target_species, first_dose, booster, mandatory, app_date) = fields
+            
+            if not species: species = s
+            if not birth_date_str: birth_date_str = bd
 
-        all_vaccines.append({
-            "vaccine_name": vaccine_name,
-            "description": desc,
-            "target_species": target_species,
-            "first_dose_age_months": float(first_dose),
-            "booster_interval_months": float(booster) if booster != 'None' else None,
-            "mandatory": mandatory.lower() == 'true'
-        })
+            all_vaccines.append({
+                "vaccine_name": vaccine_name,
+                "description": desc,
+                "target_species": target_species,
+                "first_dose_age_months": float(first_dose),
+                "booster_interval_months": float(booster) if booster != 'None' and booster.lower() != 'null' else None,
+                "mandatory": mandatory.lower() == 'true'
+            })
 
-        if app_date != "NULL":
-            applied_vaccines.add(vaccine_name)
+            if app_date != "NULL":
+                applied_vaccines.add(vaccine_name)
+        except (ValueError, IndexError):
+            sys.stderr.write(f"Skipping malformed vaccine data: {item}\n")
+            continue
 
     if not birth_date_str:
         return
